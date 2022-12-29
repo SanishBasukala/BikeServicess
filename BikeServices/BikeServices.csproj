@@ -49,4 +49,9 @@
         <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Remove="wwwroot\css\login.razor" />
+      <Content Remove="wwwroot\css\logincss.css" />
+    </ItemGroup>
+
 </Project>

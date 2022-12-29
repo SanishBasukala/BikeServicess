@@ -1,0 +1,19 @@
+﻿.login_body{
+    display:flex;
+    justify-content:center;
+    margin-top: 100px;
+}
+.heading {
+    color: #2588DA;
+    font-size:40px;
+}
+.textfield {
+    display:flex;   
+    flex-direction: column;
+    width: 400px;
+    gap:10px;
+}
+
+.login_error{
+    margin-top: 10px;
+}

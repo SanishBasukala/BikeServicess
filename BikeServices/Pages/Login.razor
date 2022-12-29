@@ -1,28 +1,25 @@
 ﻿@page "/login"
 @inject NavigationManager NavManager
 
-<div class="login-body">
-    <div class="form-login">
+<div class="login_body">
+
         <form class="text-center" @onsubmit="LoginHandler">
-            <img class="mb-4" src="/appicon.png" alt="" height="72">
-            <h1 class="h3 mb-3 fw-normal">Please Login</h1>
-            <div class="form-floating">
-                <input type="text" class="form-control username" @bind="_username" placeholder="Username" />
-                <label for="floatingInput">Username</label>
+            <h1 class="h3 mb-3 fw-normal heading">Login</h1>
+            <div class="textfield">
+                    <input class="form-control" type="text" @bind="_username" placeholder="Username" />
+                <input class="form-control" type="password" @bind="_password" placeholder="Password" />
             </div>
-            <div class="form-floating mb-3">
-                <input type="password" class="form-control password" @bind="_password" placeholder="Password" />
-                <label for="floatingPassword">Password</label>
-            </div>
+<div class="login_error">
             @if (!string.IsNullOrEmpty(_errorMessage))
             {
                 <AlertMessage Type="danger" Message="@_errorMessage" />
             }
+            </div>
             <button class="w-100 btn btn-lg btn-primary" type="submit">
                 <span class="oi oi-account-login"></span> Login
             </button>
         </form>
-    </div>
+
 </div>
 
 @code {
@@ -52,7 +49,7 @@
             _globalState.CurrentUser = UsersService.Login(_username, _password);
             if (_globalState.CurrentUser != null)
             {
-                NavManager.NavigateTo("/bikeservice");
+                NavManager.NavigateTo("/inventory");
             }
         }
         catch (Exception e)

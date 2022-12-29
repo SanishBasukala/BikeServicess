@@ -4,7 +4,7 @@
 namespace BikeServices.Data;
 public static class InventoryService
 {
-    private static void SaveAll(Guid userId, List<Items> todos)
+    private static void SaveAll(Guid userId, List<Items> items)
     {
         string appDataDirectoryPath = Utils.GetAppDirectoryPath();
         string itemsFilePath = Utils.GetItemsFilePath(userId);
@@ -14,7 +14,7 @@ public static class InventoryService
             Directory.CreateDirectory(appDataDirectoryPath);
         }
 
-        var json = JsonSerializer.Serialize(todos);
+        var json = JsonSerializer.Serialize(items);
         File.WriteAllText(itemsFilePath, json);
     }
 
@@ -35,30 +35,30 @@ public static class InventoryService
     {
 
 
-        List<Items> todos = GetAll(userId);
-        todos.Add(new Items
+        List<Items> items = GetAll(userId);
+        items.Add(new Items
         {
             ItemName = taskName,
             Quanity = quanity,
             LastTakenOut = lastTakenOut
         });
-        SaveAll(userId, todos);
-        return todos;
+        SaveAll(userId, items);
+        return items;
     }
 
     public static List<Items> Delete(Guid userId, Guid id)
     {
-        List<Items> todos = GetAll(userId);
-        Items todo = todos.FirstOrDefault(x => x.Id == id);
+        List<Items> items = GetAll(userId);
+        Items item = items.FirstOrDefault(x => x.Id == id);
 
-        if (todo == null)
+        if (item == null)
         {
-            throw new Exception("Todo not found.");
+            throw new Exception("item not found.");
         }
 
-        todos.Remove(todo);
-        SaveAll(userId, todos);
-        return todos;
+        items.Remove(item);
+        SaveAll(userId, items);
+        return items;
     }
 
     public static void DeleteByUserId(Guid userId)
@@ -72,19 +72,19 @@ public static class InventoryService
 
     public static List<Items> Update(Guid userId, Guid id, string taskName, int quantity, DateTime lastTakenOut)
     {
-        List<Items> todos = GetAll(userId);
-        Items todoToUpdate = todos.FirstOrDefault(x => x.Id == id);
+        List<Items> items = GetAll(userId);
+        Items itemToUpdate = items.FirstOrDefault(x => x.Id == id);
 
-        if (todoToUpdate == null)
+        if (itemToUpdate == null)
         {
-            throw new Exception("Todo not found.");
+            throw new Exception("item not found.");
         }
 
-        todoToUpdate.ItemName = taskName;
-        todoToUpdate.Quanity = quantity;
-        todoToUpdate.LastTakenOut = lastTakenOut;
-        SaveAll(userId, todos);
-        return todos;
+        itemToUpdate.ItemName = taskName;
+        itemToUpdate.Quanity = quantity;
+        itemToUpdate.LastTakenOut = lastTakenOut;
+        SaveAll(userId, items);
+        return items;
     }
 }
 

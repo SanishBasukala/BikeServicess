@@ -1,8 +1,8 @@
-﻿@page "/bikeservice"
+﻿@page "/inventory"
 
 <nav class="navbar navbar-light bg-light justify-content-between">
     <h1 class="navbar-brand mb-0 h1">Inventory</h1>
-    <button class="btn btn-primary" type="button" @onclick="OpenAddTodoDialog">
+    <button class="btn btn-primary" type="button" @onclick="OpenAddItemDialog">
         <span class="oi oi-plus" /> Add
     </button>
 </nav>
@@ -29,26 +29,26 @@
     </thead>
     <tbody>
         @{
-            IEnumerable<Items> todoList = _items;
-            foreach (var todoItem in todoList)
+            IEnumerable<Items> itemList = _items;
+            foreach (var inventoryItem in itemList)
             {
                 <tr>
 
-                <td >@todoItem.ItemName</td>
+                <td >@inventoryItem.ItemName</td>
                 <td>
                     <p class="small mb-0">
-                        @todoItem.Quanity
+                        @inventoryItem.Quanity
                     </p>
                 </td>
                <td>
-               @todoItem.LastTakenOut
+               @inventoryItem.LastTakenOut
                </td>
                 <td>
                     <button class="btn btn-outline-secondary" type="button"
-                        @onclick="()=>OpenEditTodoDialog(todoItem)">
+                        @onclick="()=>OpenEditItemDialog(inventoryItem)">
                         <span class="oi oi-pencil" /> Edit
                     </button>
-                    <button class="btn btn-outline-danger" type="button" @onclick="()=>OpenDeleteTodoDialog(todoItem)">
+                    <button class="btn btn-outline-danger" type="button" @onclick="()=>OpenDeleteItemDialog(inventoryItem)">
                         <span class="oi oi-delete" /> Delete
                     </button>
                 </td>
@@ -58,9 +58,9 @@
     </tbody>
 </table>
 
-@if (_showEditTodoDialog)
+@if (_showeditItemDialog)
 {
-    <ModalDialog Title="@_dialogTitle" OnClose="@OnEditTodoDialogClose" OkLabel="@_dialogOkLabel">
+    <ModalDialog Title="@_dialogTitle" OnClose="@OnEditItemDialogClose" OkLabel="@_dialogOkLabel">
     <div class="form-floating">
         <input id="itemName" type="text" class="form-control" @bind="_itemModel.ItemName" placeholder="Item Name" />
         <label for="itemName">Item Name</label>
@@ -91,7 +91,7 @@
 @code {
     [CascadingParameter]
     private GlobalState _globalState { get; set; }
-    private bool _showEditTodoDialog { get; set; }
+    private bool _showeditItemDialog { get; set; }
     private bool _showDeleteTodoDialog { get; set; }
     private List<Items> _items { get; set; }
     private Items _deleteItem { get; set; }
@@ -107,36 +107,36 @@
     }
 
 
-    private void OpenAddTodoDialog()
+    private void OpenAddItemDialog()
     {
         _dialogTitle = "Add Todo";
         _dialogOkLabel = "Add";
         _itemModel = new Items();
         _itemModel.Id = Guid.Empty;
-        _showEditTodoDialog = true;
+        _showeditItemDialog = true;
     }
 
-    private void OpenEditTodoDialog(Items editTodo)
+    private void OpenEditItemDialog(Items editItem)
     {
         _dialogTitle = "Edit Todo";
         _dialogOkLabel = "Save";
 
-        _itemModel = editTodo;
+        _itemModel = editItem;
 
-        _showEditTodoDialog = true;
+        _showeditItemDialog = true;
     }
 
-    private void OpenDeleteTodoDialog(Items item)
+    private void OpenDeleteItemDialog(Items item)
     {
         _deleteItem = item;
         _showDeleteTodoDialog = true;
     }
 
-    private void OnEditTodoDialogClose(bool isCancel)
+    private void OnEditItemDialogClose(bool isCancel)
     {
         if (isCancel)
         {
-            _showEditTodoDialog = false;
+            _showeditItemDialog = false;
         }
         else
         {
@@ -151,7 +151,7 @@
                 {
                     _items = InventoryService.Update(_globalState.CurrentUser.Id, _itemModel.Id, _itemModel.ItemName, _itemModel.Quanity,  _itemModel.LastTakenOut);
                 }
-                _showEditTodoDialog = false;
+                _showeditItemDialog = false;
             }
             catch (Exception e)
             {

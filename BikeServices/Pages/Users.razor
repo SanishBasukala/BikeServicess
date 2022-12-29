@@ -21,7 +21,6 @@
         {
             <tr>
                 <td>@user.Username</td>
-                <td>@user.Role.ToString()</td>
                 <td>@user.CreatedAt.ToString("MMM dd, yyyy h:mm tt")</td>
                 <td>
                     @{
@@ -51,16 +50,6 @@
         <div class="form-floating mb-3">
             <input type="password" class="form-control password" @bind="_password" placeholder="Password" />
             <label for="floatingPassword">Password</label>
-        </div>
-        <div class="form-check">
-            <input id="userRole" type="radio" class="form-check-input" name="role" value="@Role.User"
-                @onchange="RoleChangeHandler" checked="@(_role == Role.User)">
-            <label class="form-check-label" for="userRole">@Role.User</label>
-        </div>
-        <div class="form-check">
-            <input id="adminRole" type="radio" class="form-check-input" name="role" value="@Role.Admin"
-                @onchange="RoleChangeHandler" checked="@(_role == Role.Admin)">
-            <label class="form-check-label" for="adminRole">@Role.Admin</label>
         </div>
         @if (!string.IsNullOrEmpty(_addUserErrorMessage))
             {
@@ -92,7 +81,6 @@
     private User _deleteUser { get; set; }
     private string _username { get; set; }
     private string _password { get; set; }
-    private Role _role { get; set; }
 
     protected override void OnInitialized()
     {
@@ -104,7 +92,6 @@
         _showAddUserDialog = true;
         _username = "";
         _password = "";
-        _role = Role.User;
     }
     private void OnAddUserDialogClose(bool isCancel)
     {
@@ -118,7 +105,7 @@
             try
             {
                 _addUserErrorMessage = "";
-                _users = UsersService.Create(_globalState.CurrentUser.Id, _username, _password, _role);
+                _users = UsersService.Create(_globalState.CurrentUser.Id, _username, _password);
                 _showAddUserDialog = false;
             }
             catch (Exception e)
@@ -126,11 +113,6 @@
                 _addUserErrorMessage = e.Message;
             }
         }
-    }
-
-    private void RoleChangeHandler(ChangeEventArgs e)
-    {
-        _role = (Role)Enum.Parse(typeof(Role), e.Value.ToString());
     }
 
     private void OpenDeleteUserDialog(User user)

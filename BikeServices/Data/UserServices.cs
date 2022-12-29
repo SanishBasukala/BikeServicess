@@ -34,7 +34,7 @@ public static class UsersService
         return JsonSerializer.Deserialize<List<User>>(json);
     }
 
-    public static List<User> Create(Guid userId, string username, string password, Role role)
+    public static List<User> Create(Guid userId, string username, string password)
     {
         List<User> users = GetAll();
         bool usernameExists = users.Any(x => x.Username == username);
@@ -48,22 +48,11 @@ public static class UsersService
             new User
             {
                 Username = username,
-                Role = role,
                 CreatedBy = userId
             }
         );
         SaveAll(users);
         return users;
-    }
-
-    public static void SeedUsers()
-    {
-        var users = GetAll().FirstOrDefault(x => x.Role == Role.Admin);
-
-        if (users == null)
-        {
-            Create(Guid.Empty, SeedUsername, SeedPassword, Role.Admin);
-        }
     }
     public static User GetById(Guid id)
     {
