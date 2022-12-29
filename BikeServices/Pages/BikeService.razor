@@ -1,0 +1,185 @@
+﻿@page "/bikeservice"
+
+<nav class="navbar navbar-light bg-light justify-content-between">
+    <h1 class="navbar-brand mb-0 h1">Inventory</h1>
+    <button class="btn btn-primary" type="button" @onclick="OpenAddTodoDialog">
+        <span class="oi oi-plus" /> Add
+    </button>
+</nav>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <div class="d-flex">
+                    Items
+                </div>
+            </th>
+            <th>
+                <div class="d-flex">
+                    Quanity
+                </div>
+            </th>
+            <th>
+                <div class="d-flex">
+                    Last taken out on
+                </div>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            IEnumerable<Items> todoList = _items;
+            foreach (var todoItem in todoList)
+            {
+                <tr>
+
+                <td >@todoItem.ItemName</td>
+                <td>
+                    <p class="small mb-0">
+                        @todoItem.Quanity
+                    </p>
+                </td>
+               <td>
+               @todoItem.LastTakenOut
+               </td>
+                <td>
+                    <button class="btn btn-outline-secondary" type="button"
+                        @onclick="()=>OpenEditTodoDialog(todoItem)">
+                        <span class="oi oi-pencil" /> Edit
+                    </button>
+                    <button class="btn btn-outline-danger" type="button" @onclick="()=>OpenDeleteTodoDialog(todoItem)">
+                        <span class="oi oi-delete" /> Delete
+                    </button>
+                </td>
+            </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@if (_showEditTodoDialog)
+{
+    <ModalDialog Title="@_dialogTitle" OnClose="@OnEditTodoDialogClose" OkLabel="@_dialogOkLabel">
+    <div class="form-floating">
+        <input id="itemName" type="text" class="form-control" @bind="_itemModel.ItemName" placeholder="Item Name" />
+        <label for="itemName">Item Name</label>
+    </div>
+    <div class="form-floating">
+        <input id="quantity" type="number" class="form-control" @bind="_itemModel.Quanity" placeholder="Quantity" />
+            <label for="quantity">Quantity</label>
+    </div>
+
+    @if (!string.IsNullOrEmpty(_editItemErrorMessage))
+        {
+            <AlertMessage Type="danger" Message="@_editItemErrorMessage" />
+        }
+        </ModalDialog>
+}
+
+@if (_showDeleteTodoDialog)
+{
+    <ModalDialog Title="Delete Todo" OnClose="@OnDeleteTodoDialogClose" OkLabel="Confirm">
+        <p>Are you sure you want to delete <strong>@_deleteItem.ItemName</strong> item?</p>
+    @if (!string.IsNullOrEmpty(_deleteItemErrorMessage))
+        {
+            <AlertMessage Type="danger" Message="@_deleteItemErrorMessage" />
+        }
+        </ModalDialog>
+}
+
+@code {
+    [CascadingParameter]
+    private GlobalState _globalState { get; set; }
+    private bool _showEditTodoDialog { get; set; }
+    private bool _showDeleteTodoDialog { get; set; }
+    private List<Items> _items { get; set; }
+    private Items _deleteItem { get; set; }
+    private string _dialogTitle { get; set; }
+    private string _dialogOkLabel { get; set; }
+    private string _editItemErrorMessage { get; set; }
+    private string _deleteItemErrorMessage { get; set; }
+    private Items _itemModel { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _items = InventoryService.GetAll(_globalState.CurrentUser.Id);
+    }
+
+
+    private void OpenAddTodoDialog()
+    {
+        _dialogTitle = "Add Todo";
+        _dialogOkLabel = "Add";
+        _itemModel = new Items();
+        _itemModel.Id = Guid.Empty;
+        _showEditTodoDialog = true;
+    }
+
+    private void OpenEditTodoDialog(Items editTodo)
+    {
+        _dialogTitle = "Edit Todo";
+        _dialogOkLabel = "Save";
+
+        _itemModel = editTodo;
+
+        _showEditTodoDialog = true;
+    }
+
+    private void OpenDeleteTodoDialog(Items item)
+    {
+        _deleteItem = item;
+        _showDeleteTodoDialog = true;
+    }
+
+    private void OnEditTodoDialogClose(bool isCancel)
+    {
+        if (isCancel)
+        {
+            _showEditTodoDialog = false;
+        }
+        else
+        {
+            try
+            {
+                _editItemErrorMessage = "";
+                if (_itemModel.Id == Guid.Empty)
+                {
+                    _items = InventoryService.Create(_globalState.CurrentUser.Id, _itemModel.ItemName, _itemModel.Quanity, _itemModel.LastTakenOut);
+                }
+                else
+                {
+                    _items = InventoryService.Update(_globalState.CurrentUser.Id, _itemModel.Id, _itemModel.ItemName, _itemModel.Quanity,  _itemModel.LastTakenOut);
+                }
+                _showEditTodoDialog = false;
+            }
+            catch (Exception e)
+            {
+                _editItemErrorMessage = e.Message;
+            }
+        }
+    }
+    private void OnDeleteTodoDialogClose(bool isCancel)
+    {
+        if (isCancel)
+        {
+
+            _showDeleteTodoDialog = false;
+            _deleteItem = null;
+        }
+        else
+        {
+            try
+            {
+                _deleteItemErrorMessage = "";
+                _items = InventoryService.Delete(_globalState.CurrentUser.Id, _deleteItem.Id);
+                _showDeleteTodoDialog = false;
+                _deleteItem = null;
+            }
+            catch (Exception e)
+            {
+                _deleteItemErrorMessage = e.Message;
+            }
+        }
+    }
+}
