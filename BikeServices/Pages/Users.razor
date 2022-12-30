@@ -1,7 +1,9 @@
 ﻿@page "/users"
+@using System.Diagnostics
 
 <nav class="navbar navbar-light bg-light justify-content-between">
     <h1 class="navbar-brand mb-0 h1">Users</h1>
+
     <button class="btn btn-primary" type="button" @onclick="OpenAddUserDialog">
         <span class="oi oi-plus" /> Add Admin
     </button>
@@ -10,7 +12,6 @@
     <thead>
         <tr>
             <th>Username</th>
-            <th>Role</th>
             <th>Created At</th>
             <th>CreatedBy</th>
             <th>Actions</th>
@@ -81,24 +82,29 @@
     private User _deleteUser { get; set; }
     private string _username { get; set; }
     private string _password { get; set; }
+    private int noOfUsers;
 
     protected override void OnInitialized()
     {
         _users = UsersService.GetAll();
+        foreach(var i in _users){
+            noOfUsers += 1;
+        }
     }
 
     private void OpenAddUserDialog()
     {
-        _showAddUserDialog = true;
-        _username = "";
-        _password = "";
+            _showAddUserDialog = true;
+            _username = "";
+            _password = "";
+        
     }
     private void OnAddUserDialogClose(bool isCancel)
     {
         if (isCancel)
         {
-
             _showAddUserDialog = false;
+            _addUserErrorMessage = "";
         }
         else
         {
@@ -107,6 +113,7 @@
                 _addUserErrorMessage = "";
                 _users = UsersService.Create(_globalState.CurrentUser.Id, _username, _password);
                 _showAddUserDialog = false;
+                noOfUsers += 1;
             }
             catch (Exception e)
             {
@@ -136,6 +143,7 @@
                 _users = UsersService.Delete(_deleteUser.Id);
                 _showDeleteUserDialog = false;
                 _deleteUser = null;
+                noOfUsers -= 1;
             }
             catch (Exception e)
             {

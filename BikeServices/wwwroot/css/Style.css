@@ -1,4 +1,5 @@
-﻿.login_body{
+﻿/*login page*/
+.login_body{
     display:flex;
     justify-content:center;
     margin-top: 100px;
@@ -17,3 +18,13 @@
 .login_error{
     margin-top: 10px;
 }
+
+/*inventory page*/
+.request_button {
+    outline: 2px solid rgb(19, 153, 12);
+}
+
+    .request_button:hover {
+        background-color: rgb(19, 153, 12);
+        color: white;
+    }

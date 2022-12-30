@@ -51,6 +51,9 @@
                     <button class="btn btn-outline-danger" type="button" @onclick="()=>OpenDeleteItemDialog(inventoryItem)">
                         <span class="oi oi-delete" /> Delete
                     </button>
+                    <button class="btn request_button" type="button" @onclick="()=>OpenRequestItemDialog()">
+                        <span class="oi oi-envelope"/> Request
+                    </button>
                 </td>
             </tr>
             }
@@ -77,9 +80,9 @@
         </ModalDialog>
 }
 
-@if (_showDeleteTodoDialog)
+@if (_showDeleteItemDialog)
 {
-    <ModalDialog Title="Delete Todo" OnClose="@OnDeleteTodoDialogClose" OkLabel="Confirm">
+    <ModalDialog Title="Delete Item" OnClose="@OnDeleteItemDialogClose" OkLabel="Confirm">
         <p>Are you sure you want to delete <strong>@_deleteItem.ItemName</strong> item?</p>
     @if (!string.IsNullOrEmpty(_deleteItemErrorMessage))
         {
@@ -92,7 +95,7 @@
     [CascadingParameter]
     private GlobalState _globalState { get; set; }
     private bool _showeditItemDialog { get; set; }
-    private bool _showDeleteTodoDialog { get; set; }
+    private bool _showDeleteItemDialog { get; set; }
     private List<Items> _items { get; set; }
     private Items _deleteItem { get; set; }
     private string _dialogTitle { get; set; }
@@ -106,10 +109,9 @@
         _items = InventoryService.GetAll(_globalState.CurrentUser.Id);
     }
 
-
     private void OpenAddItemDialog()
     {
-        _dialogTitle = "Add Todo";
+        _dialogTitle = "Add Item";
         _dialogOkLabel = "Add";
         _itemModel = new Items();
         _itemModel.Id = Guid.Empty;
@@ -118,7 +120,7 @@
 
     private void OpenEditItemDialog(Items editItem)
     {
-        _dialogTitle = "Edit Todo";
+        _dialogTitle = "Edit Item";
         _dialogOkLabel = "Save";
 
         _itemModel = editItem;
@@ -129,7 +131,7 @@
     private void OpenDeleteItemDialog(Items item)
     {
         _deleteItem = item;
-        _showDeleteTodoDialog = true;
+        _showDeleteItemDialog = true;
     }
 
     private void OnEditItemDialogClose(bool isCancel)
@@ -159,12 +161,12 @@
             }
         }
     }
-    private void OnDeleteTodoDialogClose(bool isCancel)
+    private void OnDeleteItemDialogClose(bool isCancel)
     {
         if (isCancel)
         {
 
-            _showDeleteTodoDialog = false;
+            _showDeleteItemDialog = false;
             _deleteItem = null;
         }
         else
@@ -173,7 +175,7 @@
             {
                 _deleteItemErrorMessage = "";
                 _items = InventoryService.Delete(_globalState.CurrentUser.Id, _deleteItem.Id);
-                _showDeleteTodoDialog = false;
+                _showDeleteItemDialog = false;
                 _deleteItem = null;
             }
             catch (Exception e)
@@ -181,5 +183,12 @@
                 _deleteItemErrorMessage = e.Message;
             }
         }
+    }
+    private void OpenRequestItemDialog(){
+        _dialogTitle = "Request Item";
+        _dialogOkLabel = "Request";
+        _itemModel = new Items();
+        _itemModel.Id = Guid.Empty;
+        _showeditItemDialog = true;
     }
 }

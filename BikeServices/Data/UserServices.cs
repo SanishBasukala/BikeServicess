@@ -39,6 +39,13 @@ public static class UsersService
         List<User> users = GetAll();
         bool usernameExists = users.Any(x => x.Username == username);
 
+        var count = users.Count;
+
+        if (count >= 2)
+        {
+            throw new Exception("Error");
+        }
+
         if (usernameExists)
         {
             throw new Exception("Username already exists.");
