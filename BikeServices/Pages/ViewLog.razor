@@ -1,0 +1,57 @@
+﻿@page "/viewlog"
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <div class="d-flex">
+                    Item
+                </div>
+            </th>
+            <th>
+                <div class="d-flex">
+                    Date
+                </div>
+            </th>
+            <th>
+                <div class="d-flex">
+                    Action Performed
+                </div>
+            </th>
+            <th>
+                <div class="d-flex">
+                    Action Performer
+                </div>
+            </th>
+        </tr>
+    </thead>
+    @{
+        IEnumerable<ViewLogItems> viewLogItemList = _logItems;
+        foreach (var viewLogItem in viewLogItemList)
+        {
+            <tr>
+                <td>@viewLogItem.ItemName</td>
+                <td>@viewLogItem.ActionDate.ToString("mm/dd/yyyy")</td>
+                <td>@viewLogItem.ActionPerformed</td>
+                <td>
+                    @{
+                        var creator = UsersService.GetById(viewLogItem.ActionPerformer);
+                        <span>@(creator.Username)</span>
+                    }
+                </td>
+            </tr>
+        }
+    }
+</table>
+@code {
+    [CascadingParameter]
+    private GlobalState _globalState { get; set; }
+    private List<ViewLogItems> _logItems { get; set; }
+
+
+    protected override void OnInitialized()
+    {
+        _logItems = ViewLogService.GetAll();
+    }
+
+}

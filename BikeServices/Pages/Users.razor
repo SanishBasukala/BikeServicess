@@ -31,7 +31,7 @@
                 </td>
                 <td>
                     <button disabled="@(_globalState.CurrentUser != null ? _globalState.CurrentUser.Id == user.Id : false)"
-                    class="btn btn-outline-danger" type="button" @onclick="()=>OpenDeleteUserDialog(user)">
+                        class="btn btn-outline-danger" type="button" @onclick="()=>OpenDeleteUserDialog(user)">
                         <span class="oi oi-delete" /> Delete
                     </button>
                 </td>
@@ -43,18 +43,18 @@
 @if (_showAddUserDialog)
 {
     <ModalDialog Title="Add User" OnClose="@OnAddUserDialogClose" OkLabel="Add">
-    <form>
-        <div class="form-floating">
-            <input type="text" class="form-control username" @bind="_username" placeholder="Username" />
-            <label for="floatingInput">Username</label>
-        </div>
-        <div class="form-floating mb-3">
-            <input type="password" class="form-control password" @bind="_password" placeholder="Password" />
-            <label for="floatingPassword">Password</label>
-        </div>
-        @if (!string.IsNullOrEmpty(_addUserErrorMessage))
+        <form>
+            <div class="form-floating">
+                <input type="text" class="form-control username" @bind="_username" placeholder="Username" />
+                <label for="floatingInput">Username</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="password" class="form-control password" @bind="_password" placeholder="Password" />
+                <label for="floatingPassword">Password</label>
+            </div>
+            @if (!string.IsNullOrEmpty(_addItemErrorMessage))
             {
-                <AlertMessage Type="danger" Message="@_addUserErrorMessage" />
+                <AlertMessage Type="danger" Message="@_addItemErrorMessage" />
             }
         </form>
     </ModalDialog>
@@ -63,8 +63,8 @@
 @if (_showDeleteUserDialog)
 {
     <ModalDialog Title="Delete User" OnClose="@OnDeleteUserDialogClose" OkLabel="Confirm">
-    <p>Are you sure you want to delete <strong>@_deleteUser.Username</strong> user and their data?</p>
-    @if (!string.IsNullOrEmpty(_deleteUserErrorMessage))
+        <p>Are you sure you want to delete <strong>@_deleteUser.Username</strong> user and their data?</p>
+        @if (!string.IsNullOrEmpty(_deleteUserErrorMessage))
         {
             <AlertMessage Type="danger" Message="@_deleteUserErrorMessage" />
         }
@@ -77,47 +77,42 @@
     private List<User> _users { get; set; }
     private bool _showAddUserDialog { get; set; }
     private bool _showDeleteUserDialog { get; set; }
-    private string _addUserErrorMessage { get; set; }
+    private string _addItemErrorMessage { get; set; }
     private string _deleteUserErrorMessage { get; set; }
     private User _deleteUser { get; set; }
     private string _username { get; set; }
     private string _password { get; set; }
-    private int noOfUsers;
 
     protected override void OnInitialized()
     {
         _users = UsersService.GetAll();
-        foreach(var i in _users){
-            noOfUsers += 1;
-        }
     }
 
     private void OpenAddUserDialog()
     {
-            _showAddUserDialog = true;
-            _username = "";
-            _password = "";
-        
+        _showAddUserDialog = true;
+        _username = "";
+        _password = "";
     }
+
     private void OnAddUserDialogClose(bool isCancel)
     {
         if (isCancel)
         {
             _showAddUserDialog = false;
-            _addUserErrorMessage = "";
+            _addItemErrorMessage = "";
         }
         else
         {
             try
             {
-                _addUserErrorMessage = "";
+                _addItemErrorMessage = "";
                 _users = UsersService.Create(_globalState.CurrentUser.Id, _username, _password);
                 _showAddUserDialog = false;
-                noOfUsers += 1;
             }
             catch (Exception e)
             {
-                _addUserErrorMessage = e.Message;
+                _addItemErrorMessage = e.Message;
             }
         }
     }
@@ -143,7 +138,6 @@
                 _users = UsersService.Delete(_deleteUser.Id);
                 _showDeleteUserDialog = false;
                 _deleteUser = null;
-                noOfUsers -= 1;
             }
             catch (Exception e)
             {

@@ -7,7 +7,7 @@ public static class InventoryService
     private static void SaveAll(Guid userId, List<Items> items)
     {
         string appDataDirectoryPath = Utils.GetAppDirectoryPath();
-        string itemsFilePath = Utils.GetItemsFilePath(userId);
+        string itemsFilePath = Utils.GetItemsFilePath();
 
         if (!Directory.Exists(appDataDirectoryPath))
         {
@@ -20,7 +20,7 @@ public static class InventoryService
 
     public static List<Items> GetAll(Guid userId)
     {
-        string itemsFilePath = Utils.GetItemsFilePath(userId);
+        string itemsFilePath = Utils.GetItemsFilePath();
         if (!File.Exists(itemsFilePath))
         {
             return new List<Items>();
@@ -33,8 +33,6 @@ public static class InventoryService
 
     public static List<Items> Create(Guid userId, string taskName, int quanity, DateTime lastTakenOut)
     {
-
-
         List<Items> items = GetAll(userId);
         items.Add(new Items
         {
@@ -63,7 +61,7 @@ public static class InventoryService
 
     public static void DeleteByUserId(Guid userId)
     {
-        string itemsFilePath = Utils.GetItemsFilePath(userId);
+        string itemsFilePath = Utils.GetItemsFilePath();
         if (File.Exists(itemsFilePath))
         {
             File.Delete(itemsFilePath);

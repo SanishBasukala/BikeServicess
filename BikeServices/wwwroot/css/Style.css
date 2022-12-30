@@ -20,6 +20,19 @@
 }
 
 /*inventory page*/
+
+.inventoryNav {
+    background-color: rgb(199, 199, 199);
+    display: flex;
+    justify-content: space-between;
+    margin: 5px;
+}
+
+.buttons {
+    display: flex;
+    gap: 20px;
+}
+
 .request_button {
     outline: 2px solid rgb(19, 153, 12);
 }

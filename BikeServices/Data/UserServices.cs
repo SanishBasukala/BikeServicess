@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Diagnostics;
+using System.Text.Json;
 
 namespace BikeServices.Data;
 
@@ -61,6 +62,16 @@ public static class UsersService
         SaveAll(users);
         return users;
     }
+
+    public static void SeedUsers()
+    {
+        var users = GetAll().FirstOrDefault();
+
+        if (users == null)
+        {
+            Create(Guid.Empty, SeedUsername, SeedPassword);
+        }
+    }
     public static User GetById(Guid id)
     {
         List<User> users = GetAll();
@@ -88,14 +99,22 @@ public static class UsersService
     {
         var loginErrorMessage = "Invalid username or password.";
         List<User> users = GetAll();
-        User user = users.FirstOrDefault(x => x.Username == username);
 
+        User user = users.FirstOrDefault(x => x.Username == username);
+        Debug.WriteLine(user);
         if (user == null)
         {
             throw new Exception(loginErrorMessage);
         }
 
+        bool passwordIsValid = Utils.VerifyHash(password, user.PasswordHash);
 
+        if (!passwordIsValid)
+        {
+            throw new Exception(loginErrorMessage);
+
+        }
+        //System.Collections.Generic.List`1[BikeServices.Data.User]
         return user;
     }
 

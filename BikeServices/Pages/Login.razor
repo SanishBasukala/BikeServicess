@@ -2,24 +2,22 @@
 @inject NavigationManager NavManager
 
 <div class="login_body">
-
-        <form class="text-center" @onsubmit="LoginHandler">
-            <h1 class="h3 mb-3 fw-normal heading">Login</h1>
-            <div class="textfield">
-                    <input class="form-control" type="text" @bind="_username" placeholder="Username" />
-                <input class="form-control" type="password" @bind="_password" placeholder="Password" />
-            </div>
-<div class="login_error">
+    <form class="text-center" @onsubmit="LoginHandler">
+        <h1 class="h3 mb-3 fw-normal heading">Login</h1>
+        <div class="textfield">
+            <input class="form-control" type="text" @bind="_username" placeholder="Username" />
+            <input class="form-control" type="password" @bind="_password" placeholder="Password" />
+        </div>
+        <div class="login_error">
             @if (!string.IsNullOrEmpty(_errorMessage))
             {
                 <AlertMessage Type="danger" Message="@_errorMessage" />
             }
-            </div>
-            <button class="w-100 btn btn-lg btn-primary" type="submit">
-                <span class="oi oi-account-login"></span> Login
-            </button>
-        </form>
-
+        </div>
+        <button class="w-100 btn btn-lg btn-primary" type="submit">
+            <span class="oi oi-account-login"></span> Login
+        </button>
+    </form>
 </div>
 
 @code {
@@ -55,7 +53,7 @@
         catch (Exception e)
         {
             _errorMessage = e.Message;
-            Console.WriteLine(e);
+            
         }
     }
 }

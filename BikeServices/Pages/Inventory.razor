@@ -1,10 +1,15 @@
 ﻿@page "/inventory"
 
-<nav class="navbar navbar-light bg-light justify-content-between">
+<nav class="inventoryNav">
     <h1 class="navbar-brand mb-0 h1">Inventory</h1>
-    <button class="btn btn-primary" type="button" @onclick="OpenAddItemDialog">
-        <span class="oi oi-plus" /> Add
-    </button>
+    <div class="buttons">
+        <a class="btn btn-primary viewLog" type="button" href="/viewlog">
+            <span class="oi oi-browser" /> View Log
+        </a>
+        <button class="btn btn-primary" type="button" @onclick="OpenAddItemDialog">
+            <span class="oi oi-plus" /> Add
+        </button>
+    </div>
 </nav>
 
 <table class="table">
@@ -34,75 +39,105 @@
             {
                 <tr>
 
-                <td >@inventoryItem.ItemName</td>
-                <td>
-                    <p class="small mb-0">
-                        @inventoryItem.Quanity
-                    </p>
-                </td>
-               <td>
-               @inventoryItem.LastTakenOut
-               </td>
-                <td>
-                    <button class="btn btn-outline-secondary" type="button"
-                        @onclick="()=>OpenEditItemDialog(inventoryItem)">
-                        <span class="oi oi-pencil" /> Edit
-                    </button>
-                    <button class="btn btn-outline-danger" type="button" @onclick="()=>OpenDeleteItemDialog(inventoryItem)">
-                        <span class="oi oi-delete" /> Delete
-                    </button>
-                    <button class="btn request_button" type="button" @onclick="()=>OpenRequestItemDialog()">
-                        <span class="oi oi-envelope"/> Request
-                    </button>
-                </td>
-            </tr>
+                    <td>@inventoryItem.ItemName</td>
+                    <td>
+                        <p class="small mb-0">
+                            @inventoryItem.Quanity
+                        </p>
+                    </td>
+                    <td>
+                        @inventoryItem.LastTakenOut
+                    </td>
+                    <td>
+                        <button class="btn btn-outline-secondary" type="button"
+                            @onclick="()=>OpenEditItemDialog(inventoryItem)">
+                            <span class="oi oi-pencil" /> Edit
+                        </button>
+                        <button class="btn btn-outline-danger" type="button" @onclick="()=>OpenDeleteItemDialog(inventoryItem)">
+                            <span class="oi oi-delete" /> Delete
+                        </button>
+                        <button class="btn request_button" type="button" @onclick="()=>OpenRequestItemDialog()">
+                            <span class="oi oi-envelope" /> Request
+                        </button>
+                    </td>
+                </tr>
             }
         }
     </tbody>
 </table>
+@if (_showAddItemDialog)
+{
+    <ModalDialog Title="@_dialogTitle" OnClose="@OnAddItemDialogClose" OkLabel="@_dialogOkLabel">
+        <div class="form-floating">
+            <input id="itemName" type="text" class="form-control" @bind="_itemName" placeholder="Item Name" />
+            <label for="itemName">Item Name</label>
+        </div>
+        <div class="form-floating">
+            <input id="quantity" type="number" class="form-control" @bind="_quantity" placeholder="Quantity" />
+            <label for="quantity">Quantity</label>
+        </div>
 
-@if (_showeditItemDialog)
+        @if (!string.IsNullOrEmpty(_addItemErrorMessage))
+        {
+            <AlertMessage Type="danger" Message="@_addItemErrorMessage" />
+        }
+    </ModalDialog>
+}
+@if (_showEditItemDialog)
 {
     <ModalDialog Title="@_dialogTitle" OnClose="@OnEditItemDialogClose" OkLabel="@_dialogOkLabel">
-    <div class="form-floating">
-        <input id="itemName" type="text" class="form-control" @bind="_itemModel.ItemName" placeholder="Item Name" />
-        <label for="itemName">Item Name</label>
-    </div>
-    <div class="form-floating">
-        <input id="quantity" type="number" class="form-control" @bind="_itemModel.Quanity" placeholder="Quantity" />
+        <div class="form-floating">
+            <input id="itemName" type="text" class="form-control" @bind="_itemModel.ItemName" placeholder="Item Name" />
+            <label for="itemName">Item Name</label>
+        </div>
+        <div class="form-floating">
+            <input id="quantity" type="number" class="form-control" @bind="_itemModel.Quanity" placeholder="Quantity" />
             <label for="quantity">Quantity</label>
-    </div>
+        </div>
 
-    @if (!string.IsNullOrEmpty(_editItemErrorMessage))
+        @if (!string.IsNullOrEmpty(_editItemErrorMessage))
         {
             <AlertMessage Type="danger" Message="@_editItemErrorMessage" />
         }
-        </ModalDialog>
+    </ModalDialog>
 }
 
 @if (_showDeleteItemDialog)
 {
     <ModalDialog Title="Delete Item" OnClose="@OnDeleteItemDialogClose" OkLabel="Confirm">
         <p>Are you sure you want to delete <strong>@_deleteItem.ItemName</strong> item?</p>
-    @if (!string.IsNullOrEmpty(_deleteItemErrorMessage))
+        @if (!string.IsNullOrEmpty(_deleteItemErrorMessage))
         {
             <AlertMessage Type="danger" Message="@_deleteItemErrorMessage" />
         }
-        </ModalDialog>
+    </ModalDialog>
 }
 
 @code {
     [CascadingParameter]
     private GlobalState _globalState { get; set; }
-    private bool _showeditItemDialog { get; set; }
+    private bool _showAddItemDialog { get; set; }
+    private bool _showEditItemDialog { get; set; }
     private bool _showDeleteItemDialog { get; set; }
     private List<Items> _items { get; set; }
+    private List<ViewLogItems> _viewLogItems { get; set; }
+    private List<User> _users { get; set; }
     private Items _deleteItem { get; set; }
     private string _dialogTitle { get; set; }
     private string _dialogOkLabel { get; set; }
+    private string _addItemErrorMessage { get; set; }
     private string _editItemErrorMessage { get; set; }
     private string _deleteItemErrorMessage { get; set; }
     private Items _itemModel { get; set; }
+    private string _itemName{ get; set; }
+    private int _quantity { get; set; }
+    private DateTime _lastTakenOut{ get; set; }
+    private string tempItemName;
+
+    //view log
+    private DateTime _actionDate { get; set; }
+    private string _actionPerformed{ get; set; }
+    private string _actionPerformer{ get; set; }
 
     protected override void OnInitialized()
     {
@@ -113,9 +148,40 @@
     {
         _dialogTitle = "Add Item";
         _dialogOkLabel = "Add";
-        _itemModel = new Items();
-        _itemModel.Id = Guid.Empty;
-        _showeditItemDialog = true;
+        _itemName = "";
+        _quantity = 0;
+        _showAddItemDialog = true;
+    }
+
+    private void OnAddItemDialogClose(bool isCancel)
+    {
+        if (isCancel)
+        {
+            _showAddItemDialog = false;
+            _addItemErrorMessage = "";
+        }
+        else if(string.IsNullOrEmpty(_itemName)){
+            _addItemErrorMessage = "Task name empty";
+        }
+        else if(_quantity <= 0 ){
+            _addItemErrorMessage = "Quanity must be more than 0";
+        }
+        else
+        {
+            try
+            {
+                _actionDate = DateTime.Now;
+                _actionPerformed = "Added item";
+                _addItemErrorMessage = "";
+                _viewLogItems = ViewLogService.Create(_globalState.CurrentUser.Id, _itemName, _actionDate, _actionPerformed);
+                _items = InventoryService.Create(_globalState.CurrentUser.Id, _itemName, _quantity, _lastTakenOut);
+                _showAddItemDialog = false;
+            }
+            catch (Exception e)
+            {
+                _addItemErrorMessage = e.Message;
+            }
+        }
     }
 
     private void OpenEditItemDialog(Items editItem)
@@ -125,7 +191,7 @@
 
         _itemModel = editItem;
 
-        _showeditItemDialog = true;
+        _showEditItemDialog = true;
     }
 
     private void OpenDeleteItemDialog(Items item)
@@ -138,22 +204,24 @@
     {
         if (isCancel)
         {
-            _showeditItemDialog = false;
+            _showEditItemDialog = false;
         }
         else
         {
             try
             {
+
                 _editItemErrorMessage = "";
                 if (_itemModel.Id == Guid.Empty)
                 {
+
                     _items = InventoryService.Create(_globalState.CurrentUser.Id, _itemModel.ItemName, _itemModel.Quanity, _itemModel.LastTakenOut);
                 }
                 else
                 {
-                    _items = InventoryService.Update(_globalState.CurrentUser.Id, _itemModel.Id, _itemModel.ItemName, _itemModel.Quanity,  _itemModel.LastTakenOut);
+                    _items = InventoryService.Update(_globalState.CurrentUser.Id, _itemModel.Id, _itemModel.ItemName, _itemModel.Quanity, _itemModel.LastTakenOut);
                 }
-                _showeditItemDialog = false;
+                _showEditItemDialog = false;
             }
             catch (Exception e)
             {
@@ -163,9 +231,9 @@
     }
     private void OnDeleteItemDialogClose(bool isCancel)
     {
+        tempItemName = _itemName;
         if (isCancel)
         {
-
             _showDeleteItemDialog = false;
             _deleteItem = null;
         }
@@ -173,6 +241,9 @@
         {
             try
             {
+                _actionDate = DateTime.Now;
+                _actionPerformed = "Deleted item";
+                _viewLogItems = ViewLogService.Create(_globalState.CurrentUser.Id, tempItemName, _actionDate, _actionPerformed);
                 _deleteItemErrorMessage = "";
                 _items = InventoryService.Delete(_globalState.CurrentUser.Id, _deleteItem.Id);
                 _showDeleteItemDialog = false;
@@ -184,11 +255,12 @@
             }
         }
     }
-    private void OpenRequestItemDialog(){
+    private void OpenRequestItemDialog()
+    {
         _dialogTitle = "Request Item";
         _dialogOkLabel = "Request";
         _itemModel = new Items();
         _itemModel.Id = Guid.Empty;
-        _showeditItemDialog = true;
+        _showEditItemDialog = true;
     }
 }

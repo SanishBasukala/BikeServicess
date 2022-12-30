@@ -55,9 +55,19 @@ public static class Utils
         return Path.Combine(GetAppDirectoryPath(), "users.json");
     }
 
-    public static string GetItemsFilePath(Guid userId)
+    public static string GetItemsFilePath()
     {
-        return Path.Combine(GetAppDirectoryPath(), userId.ToString() + "_items.json");
+        return Path.Combine(GetAppDirectoryPath(), "items.json");
+    }
+
+    public static string GetItemsLogFilePath()
+    {
+        return Path.Combine(GetAppDirectoryPath(), "itemLog.json");
+    }
+
+    public static string GetViewLogFilePath()
+    {
+        return Path.Combine(GetAppDirectoryPath(), "ViewLog.json");
     }
 }
 
