@@ -1,7 +1,23 @@
 ﻿@page "/inventoryLog"
-@*
+
 <nav class="navbar navbar-light bg-light justify-content-between">
     <h1 class="navbar-brand mb-0 h1">Inventory Log</h1>
+    <select @bind="value"  oncliconclick="SortByMonth()">
+        <option selected>Sort By Month</option>
+        <option value="jan">January</option>
+        <option value="feb">February</option>
+        <option value="mar">March</option>
+        <option value="apr">April</option>
+        <option value="may">May</option>
+        <option value="jan">June</option>
+        <option value="jul">July</option>
+        <option value="aug">August</option>
+        <option value="sep">September</option>
+        <option value="oct">October</option>
+        <option value="nov">November</option>
+        <option value="dec">December</option>
+    </select>
+   
 </nav>
 
 <table class="table">
@@ -36,148 +52,50 @@
     </thead>
     <tbody>
         @{
-            IEnumerable<Items> itemList = _items;
-            foreach (var inventoryItem in itemList)
+            IEnumerable<RequestItems> requestItemList = _requestItem;
+            foreach (var requestItem in requestItemList)
             {
                 <tr>
-
-                <td >@inventoryItem.ItemName</td>
-                <td>
-                    <p class="small mb-0">
-                        @inventoryItem.Quanity
-                    </p>
-                </td>
+                <td >@requestItem.ItemName</td>
+                <td >@requestItem.QuantityTaken</td>
+                    <td>
+                    
+                    @{
+                        var creator = UsersService.GetById(requestItem.ApprovedBy);
+                        <span>@(creator.Username)</span>
+                    }
+                    </td>
                <td>
-               @inventoryItem.LastTakenOut
+               @requestItem.TakenBy
                </td>
-                <td>
-                    <button class="btn btn-outline-secondary" type="button"
-                        @onclick="()=>OpenEditItemDialog(inventoryItem)">
-                        <span class="oi oi-pencil" /> Edit
-                    </button>
-                    <button class="btn btn-outline-danger" type="button" @onclick="()=>OpenDeleteItemDialog(inventoryItem)">
-                        <span class="oi oi-delete" /> Delete
-                    </button>
-                </td>
+               <td>@requestItem.DateTakenOut.ToString("MMM dd, yyyy")</td>
             </tr>
             }
         }
     </tbody>
 </table>
 
-@if (_showEditItemDialog)
-{
-    <ModalDialog Title="@_dialogTitle" OnClose="@OnEditItemDialogClose" OkLabel="@_dialogOkLabel">
-    <div class="form-floating">
-        <input id="itemName" type="text" class="form-control" @bind="_itemModel.ItemName" placeholder="Item Name" />
-        <label for="itemName">Item Name</label>
-    </div>
-    <div class="form-floating">
-        <input id="quantity" type="number" class="form-control" @bind="_itemModel.Quanity" placeholder="Quantity" />
-            <label for="quantity">Quantity</label>
-    </div>
 
-    @if (!string.IsNullOrEmpty(_editItemErrorMessage))
-        {
-            <AlertMessage Type="danger" Message="@_editItemErrorMessage" />
-        }
-        </ModalDialog>
-}
-
-@if (_showDeleteItemDialog)
-{
-    <ModalDialog Title="Delete Item" OnClose="@OnDeleteItemDialogClose" OkLabel="Confirm">
-        <p>Are you sure you want to delete <strong>@_deleteItem.ItemName</strong> item?</p>
-    @if (!string.IsNullOrEmpty(_deleteItemErrorMessage))
-        {
-            <AlertMessage Type="danger" Message="@_deleteItemErrorMessage" />
-        }
-        </ModalDialog>
-}
 
 @code {
     [CascadingParameter]
     private GlobalState _globalState { get; set; }
-    private bool _showEditItemDialog { get; set; }
-    private bool _showDeleteItemDialog { get; set; }
-    private List<Items> _items { get; set; }
-    private Items _deleteItem { get; set; }
-    private string _dialogTitle { get; set; }
-    private string _dialogOkLabel { get; set; }
-    private string _editItemErrorMessage { get; set; }
-    private string _deleteItemErrorMessage { get; set; }
-    private Items _itemModel { get; set; }
+
+    private List<RequestItems> _requestItem { get; set; }
+
+    private List<Items> _items{ get; set; }
+
+    private string value{ get; set; }
 
     protected override void OnInitialized()
     {
-        _items = InventoryService.GetAll(_globalState.CurrentUser.Id);
+        _requestItem = RequestItemService.GetAll();
     }
 
-    private void OpenEditItemDialog(Items editItem)
-    {
-        _dialogTitle = "Edit Item";
-        _dialogOkLabel = "Save";
-
-        _itemModel = editItem;
-
-        _showEditItemDialog = true;
-    }
-
-    private void OpenDeleteItemDialog(Items item)
-    {
-        _deleteItem = item;
-        _showDeleteItemDialog = true;
-    }
-
-    private void OnEditItemDialogClose(bool isCancel)
-    {
-        if (isCancel)
-        {
-            _showEditItemDialog = false;
-        }
-        else
-        {
-            try
-            {
-                _editItemErrorMessage = "";
-                if (_itemModel.Id == Guid.Empty)
-                {
-                    _items = InventoryService.Create(_globalState.CurrentUser.Id, _itemModel.ItemName, _itemModel.Quanity, _itemModel.LastTakenOut);
-                }
-                else
-                {
-                    _items = InventoryService.Update(_globalState.CurrentUser.Id, _itemModel.Id, _itemModel.ItemName, _itemModel.Quanity,  _itemModel.LastTakenOut);
-                }
-                _showEditItemDialog = false;
-            }
-            catch (Exception e)
-            {
-                _editItemErrorMessage = e.Message;
-            }
-        }
-    }
-    private void OnDeleteItemDialogClose(bool isCancel)
-    {
-        if (isCancel)
-        {
-
-            _showDeleteItemDialog = false;
-            _deleteItem = null;
-        }
-        else
-        {
-            try
-            {
-                _deleteItemErrorMessage = "";
-                _items = InventoryService.Delete(_globalState.CurrentUser.Id, _deleteItem.Id);
-                _showDeleteItemDialog = false;
-                _deleteItem = null;
-            }
-            catch (Exception e)
-            {
-                _deleteItemErrorMessage = e.Message;
-            }
+    private void SortByMonth(){
+        IEnumerable<Items> itemList = _items;
+        if(value == "jan"){
+            itemList = itemList.OrderBy(t => t.LastTakenOut);
         }
     }
 }
-*@

@@ -1,21 +1,23 @@
 ﻿/*login page*/
-.login_body{
-    display:flex;
-    justify-content:center;
+.login_body {
+    display: flex;
+    justify-content: center;
     margin-top: 100px;
 }
+
 .heading {
     color: #2588DA;
-    font-size:40px;
-}
-.textfield {
-    display:flex;   
-    flex-direction: column;
-    width: 400px;
-    gap:10px;
+    font-size: 40px;
 }
 
-.login_error{
+.textfield {
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+    gap: 10px;
+}
+
+.login_error {
     margin-top: 10px;
 }
 
@@ -33,11 +35,34 @@
     gap: 20px;
 }
 
-.request_button {
+.canRequest {
     outline: 2px solid rgb(19, 153, 12);
+    margin-left: 10px
 }
 
-    .request_button:hover {
+    .canRequest:hover {
         background-color: rgb(19, 153, 12);
         color: white;
+    }
+
+.cannotRequest {
+    outline: 2px solid gray;
+    background-color: gray;
+    color: white;
+    cursor: crosshair !important;
+    margin-left: 10px
+}
+
+    .cannotRequest:hover {
+        color: white !important;
+    }
+
+.note {
+    border: solid 2px yellow;
+    background-color: lightyellow;
+    padding-left: 10px;
+}
+
+    .note span {
+        color: rgb(158, 38, 38);
     }

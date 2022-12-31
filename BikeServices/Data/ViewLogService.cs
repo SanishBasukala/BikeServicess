@@ -34,6 +34,10 @@ public class ViewLogService
     public static List<ViewLogItems> Create(Guid userId, string itemName, DateTime actionDate, string actionPerformed)
     {
         List<ViewLogItems> logItems = GetAll();
+        if (logItems == null)
+        {
+            throw new Exception("item not found.");
+        }
         logItems.Add(new ViewLogItems
         {
             ItemName = itemName,

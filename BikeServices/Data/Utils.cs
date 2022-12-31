@@ -69,6 +69,11 @@ public static class Utils
     {
         return Path.Combine(GetAppDirectoryPath(), "ViewLog.json");
     }
+
+    public static string GetInventoryLogFilePath()
+    {
+        return Path.Combine(GetAppDirectoryPath(), "InventoryLog.json");
+    }
 }
 
 

@@ -18,7 +18,7 @@ public static class InventoryService
         File.WriteAllText(itemsFilePath, json);
     }
 
-    public static List<Items> GetAll(Guid userId)
+    public static List<Items> GetAll()
     {
         string itemsFilePath = Utils.GetItemsFilePath();
         if (!File.Exists(itemsFilePath))
@@ -31,12 +31,12 @@ public static class InventoryService
         return JsonSerializer.Deserialize<List<Items>>(json);
     }
 
-    public static List<Items> Create(Guid userId, string taskName, int quanity, DateTime lastTakenOut)
+    public static List<Items> Create(Guid userId, string itemName, int quanity, DateTime lastTakenOut)
     {
-        List<Items> items = GetAll(userId);
+        List<Items> items = GetAll();
         items.Add(new Items
         {
-            ItemName = taskName,
+            ItemName = itemName,
             Quanity = quanity,
             LastTakenOut = lastTakenOut
         });
@@ -46,7 +46,7 @@ public static class InventoryService
 
     public static List<Items> Delete(Guid userId, Guid id)
     {
-        List<Items> items = GetAll(userId);
+        List<Items> items = GetAll();
         Items item = items.FirstOrDefault(x => x.Id == id);
 
         if (item == null)
@@ -68,9 +68,9 @@ public static class InventoryService
         }
     }
 
-    public static List<Items> Update(Guid userId, Guid id, string taskName, int quantity, DateTime lastTakenOut)
+    public static List<Items> Update(Guid userId, Guid id, string itemName, int quantity, DateTime lastTakenOut)
     {
-        List<Items> items = GetAll(userId);
+        List<Items> items = GetAll();
         Items itemToUpdate = items.FirstOrDefault(x => x.Id == id);
 
         if (itemToUpdate == null)
@@ -78,9 +78,20 @@ public static class InventoryService
             throw new Exception("item not found.");
         }
 
-        itemToUpdate.ItemName = taskName;
+        itemToUpdate.ItemName = itemName;
         itemToUpdate.Quanity = quantity;
         itemToUpdate.LastTakenOut = lastTakenOut;
+        SaveAll(userId, items);
+        return items;
+    }
+
+    public static List<Items> DecreaseQuanity(Guid userId, Guid id, string itemName, int quantity, DateTime lastTakenOut, int quantityTaken)
+    {
+        List<Items> items = GetAll();
+        Items itemToUpdate = items.FirstOrDefault(x => x.Id == id);
+        itemToUpdate.ItemName = itemName;
+        itemToUpdate.LastTakenOut = lastTakenOut;
+        itemToUpdate.Quanity -= quantityTaken;
         SaveAll(userId, items);
         return items;
     }
