@@ -2,23 +2,25 @@
 
 <nav class="navbar navbar-light bg-light justify-content-between">
     <h1 class="navbar-brand mb-0 h1">Inventory Log</h1>
-    <select @bind="value"  oncliconclick="SortByMonth()">
-        <option selected>Sort By Month</option>
-        <option value="jan">January</option>
-        <option value="feb">February</option>
-        <option value="mar">March</option>
-        <option value="apr">April</option>
-        <option value="may">May</option>
-        <option value="jan">June</option>
-        <option value="jul">July</option>
-        <option value="aug">August</option>
-        <option value="sep">September</option>
-        <option value="oct">October</option>
-        <option value="nov">November</option>
-        <option value="dec">December</option>
+    <select @bind="_value" @onclick="() => SortByMonth()">
+        <option value="" selected>Sort By Month</option>
+        <option value="Jan">January</option>
+        <option value="Feb">February</option>
+        <option value="Mar">March</option>
+        <option value="Apr">April</option>
+        <option value="May">May</option>
+        <option value="Jun">June</option>
+        <option value="Jul">July</option>
+        <option value="Aug">August</option>
+        <option value="Sep">September</option>
+        <option value="Oct">October</option>
+        <option value="Nov">November</option>
+        <option value="Dec">December</option>
     </select>
-   
-</nav>
+        
+    
+    <h1>@_value</h1>
+    </nav>
 
 <table class="table">
     <thead>
@@ -80,22 +82,22 @@
 @code {
     [CascadingParameter]
     private GlobalState _globalState { get; set; }
-
     private List<RequestItems> _requestItem { get; set; }
-
-    private List<Items> _items{ get; set; }
-
-    private string value{ get; set; }
+    private string _value{ get; set; }
 
     protected override void OnInitialized()
     {
         _requestItem = RequestItemService.GetAll();
     }
 
-    private void SortByMonth(){
-        IEnumerable<Items> itemList = _items;
-        if(value == "jan"){
-            itemList = itemList.OrderBy(t => t.LastTakenOut);
+    void SortByMonth()
+    {
+        var name = _value;
+        if(name == "" || name == null){
+            _requestItem = RequestItemService.GetAll();
+        }
+        else{
+            _requestItem = RequestItemService.GetAll().Where(s => s.DateTakenOut.ToString("MMM").Contains(name)).ToList();
         }
     }
 }
