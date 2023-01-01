@@ -1,8 +1,8 @@
 ﻿@page "/inventoryLog"
 
 <nav class="navbar navbar-light bg-light justify-content-between">
-    <h1 class="navbar-brand mb-0 h1">Inventory Log</h1>
-    <select @bind="_value" @onclick="() => SortByMonth()">
+    <h1 class="navbar-brand mb-0 title">Inventory Log</h1>
+    <select class="dropDown" @bind="_value" @onclick="() => SortByMonth()">
         <option value="" selected>Sort By Month</option>
         <option value="Jan">January</option>
         <option value="Feb">February</option>
@@ -17,11 +17,7 @@
         <option value="Nov">November</option>
         <option value="Dec">December</option>
     </select>
-        
-    
-    <h1>@_value</h1>
     </nav>
-
 <table class="table">
     <thead>
         <tr>
@@ -92,12 +88,11 @@
 
     void SortByMonth()
     {
-        var name = _value;
-        if(name == "" || name == null){
+        if(string.IsNullOrEmpty(_value)){
             _requestItem = RequestItemService.GetAll();
         }
         else{
-            _requestItem = RequestItemService.GetAll().Where(s => s.DateTakenOut.ToString("MMM").Contains(name)).ToList();
+            _requestItem = RequestItemService.GetAll().Where(s => s.DateTakenOut.ToString("MMM").Contains(_value)).ToList();
         }
     }
 }

@@ -54,4 +54,10 @@
       <Content Remove="wwwroot\css\logincss.css" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="IgniteUI.Blazor" Version="21.2.0" />
+      <PackageReference Include="MudBlazor" Version="6.1.6" />
+      <PackageReference Include="Syncfusion.Blazor.Charts" Version="20.4.0.41" />
+    </ItemGroup>
+
 </Project>

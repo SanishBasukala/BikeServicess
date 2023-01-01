@@ -1,0 +1,61 @@
+﻿@page "/barGraph"
+@using MudBlazor;
+
+<nav class="navbar title">Inventory Item taken out chart</nav>
+<div class="graph-column">
+    <div class="graph-row">
+        <p class="quantityTaken">Quantisty taken</p>
+        @{
+            IEnumerable<RequestItems> requestedItemList = _requestItems;
+            foreach (var requestedItem in requestedItemList)
+            {
+                ListOfItems.Add(requestedItem.ItemName);
+                ListOfQuantity.Add(requestedItem.QuantityTaken);
+            }
+
+            yAxisLabels = ListOfQuantity.Select(x => (double)x).ToArray();
+            xAxisLabels = ListOfItems.ToArray();
+
+            barseries = new List<ChartSeries>()
+        {
+        new ChartSeries() {  Data = yAxisLabels},
+        };
+        }
+        <div class="barGraph">
+            <MudChart ChartType="ChartType.Bar" ChartSeries="@barseries" @bind-SelectedIndex="Index" XAxisLabels="@xAxisLabels" Width="100%" Height="350px">
+                <CustomGraphics>
+                    <style>
+                         .mud-chart-bar{
+                             stroke-width: 15px;
+                             stroke: rgb(3, 115, 252);
+                        }
+                    </style>
+
+                </CustomGraphics>
+            </MudChart>
+        </div>
+    </div>
+
+    <p>Items Requested</p>
+</div>
+
+
+@code {
+    private int Index = 1;
+
+    private List<RequestItems> _requestItems { get; set; }
+
+    private List<string> ListOfItems = new List<string>();
+
+    private List<int> ListOfQuantity = new List<int>();
+
+    public List<ChartSeries> barseries;
+
+    private double[] yAxisLabels;
+    private string[] xAxisLabels;
+
+    protected override void OnInitialized()
+    {
+        _requestItems = RequestItemService.GetAll();
+    }
+}

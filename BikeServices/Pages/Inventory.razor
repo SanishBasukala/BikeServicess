@@ -3,11 +3,11 @@
 <div  class="note">
     Request available for <span>9:00 AM - 04:00 PM (Cannot request for items on Saturday and Sunday)</span>
 </div>
-<nav class="inventoryNav">
-    <h1 class="navbar-brand mb-0 h1">Inventory</h1>
+<nav class="navbar ">
+    <h1 class="navbar-brand mb-0 title">Inventory</h1>
     <div class="buttons">
-        <a class="btn btn-primary viewLog" type="button" href="/viewlog">
-            <span class="oi oi-browser" /> View Log
+        <a class="viewLog" type="button" href="/viewlog">
+            <span class="oi oi-list" /> View Log
         </a>
         <button class="btn btn-primary" type="button" @onclick="OpenAddItemDialog">
             <span class="oi oi-plus" /> Add
@@ -40,8 +40,8 @@
             IEnumerable<Items> itemList = _items;
             foreach (var inventoryItem in itemList)
             {
+                Debug.WriteLine(_items);
                 <tr>
-
                     <td>@inventoryItem.ItemName</td>
                     <td>
                         <p class="small mb-0">
@@ -161,6 +161,7 @@
     //Add item
     private bool _showAddItemDialog { get; set; }
     private string _addItemErrorMessage { get; set; }
+    public string lastTakenOut{ get; set; }
 
     // Edit item.
     private bool _showEditItemDialog { get; set; }
@@ -227,12 +228,11 @@
         {
             try
             {
-
                 _actionDate = DateTime.Now;
                 _actionPerformed = "Added item";
                 _addItemErrorMessage = "";
                 _viewLogItems = ViewLogService.Create(_globalState.CurrentUser.Id, _itemName, _actionDate, _actionPerformed);
-                _items = InventoryService.Create(_globalState.CurrentUser.Id, _itemName, _quantity, _lastTakenOut);
+                _items = InventoryService.Create(_globalState.CurrentUser.Id, _itemName, _quantity);
                 _showAddItemDialog = false;
             }
             catch (Exception e)
@@ -265,11 +265,11 @@
                 if (_itemModel.Id == Guid.Empty)
                 {
 
-                    _items = InventoryService.Create(_globalState.CurrentUser.Id, _itemModel.ItemName, _itemModel.Quanity, _itemModel.LastTakenOut);
+                    _items = InventoryService.Create(_globalState.CurrentUser.Id, _itemModel.ItemName, _itemModel.Quanity);
                 }
                 else
                 {
-                    _items = InventoryService.Update(_globalState.CurrentUser.Id, _itemModel.Id, _itemModel.ItemName, _itemModel.Quanity, _itemModel.LastTakenOut);
+                    _items = InventoryService.Update(_globalState.CurrentUser.Id, _itemModel.Id, _itemModel.ItemName, _itemModel.Quanity);
                 }
                 _showEditItemDialog = false;
             }
@@ -344,11 +344,12 @@
         }
         else
         {
+            lastTakenOut = _dateTakenOut.ToString("MMM dd, yyyy");
             try
             {
                 _requestItemErrorMessage = "";
                 _requestItems = RequestItemService.Create(_globalState.CurrentUser.Id, _itemModel.ItemName, _quantityTaken, _takenBy, _dateTakenOut);
-                _items = InventoryService.DecreaseQuanity(_globalState.CurrentUser.Id, _itemModel.Id, _itemModel.ItemName, _itemModel.Quanity, _itemModel.LastTakenOut, _quantityTaken);
+                _items = InventoryService.DecreaseQuanity(_globalState.CurrentUser.Id, _itemModel.Id, _itemModel.ItemName, lastTakenOut, _quantityTaken);
                 _showRequestItemDialog = false;
             }
             catch (Exception e)

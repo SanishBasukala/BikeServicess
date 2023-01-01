@@ -1,4 +1,21 @@
-﻿/*login page*/
+﻿.left-navbar {
+    background-color: rgb(12,16,24);
+    font-weight: 600;
+    font-size: 20px;
+    color: white;
+    padding-top: 10px;
+    padding-bottom: 5px;
+}
+.left-navbar-down {
+    background-color: rgb(17,24,37);
+}
+.navbar {
+    background-color: rgb(199, 199, 199) !important;
+    padding-left: 10px !important;
+    border-radius: 10px;
+}
+
+/* Login page. */
 .login_body {
     display: flex;
     justify-content: center;
@@ -21,16 +38,26 @@
     margin-top: 10px;
 }
 
-/*inventory page*/
-
-.inventoryNav {
-    background-color: rgb(199, 199, 199);
-    display: flex;
-    justify-content: space-between;
-    margin: 5px;
+/* Inventory page. */
+.note {
+    border: solid 2px yellow;
+    background-color: lightyellow;
+    padding-left: 10px;
+    margin-bottom:10px;
 }
 
-.buttons {
+.viewLog {
+    background-color: rgb( 138, 83, 212 );
+    text-decoration: none;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+}
+    .viewLog:hover {
+        background-color: rgb( 106, 56, 171 );
+        color: white;
+    }
+    .buttons {
     display: flex;
     gap: 20px;
 }
@@ -57,12 +84,46 @@
         color: white !important;
     }
 
-.note {
-    border: solid 2px yellow;
-    background-color: lightyellow;
-    padding-left: 10px;
-}
+
 
     .note span {
         color: rgb(158, 38, 38);
     }
+/* Inventory Log. */
+.dropDown {
+    border: 2px rgb(99, 99, 99) solid;
+    border-radius: 10px;
+    padding: 3px;
+    margin-right: 20px;
+    color: white;
+    background-color: rgb(56, 56, 56);
+}
+
+/* Graph page. */
+.title {
+    background-color: rgb(199, 199, 199);
+    padding-left: 10px;
+    font-size: 25px;
+    font-weight:600;
+}
+.graph-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 50px;
+}
+.graph-column{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+.quantityTaken {
+    transform: rotate(-90deg);
+    width: 200px;
+    margin-left:-120px;
+}
+.barGraph {
+    border: solid 2px rgb(3, 115, 252);
+    padding: 20px;
+    margin-left: -60px;
+}

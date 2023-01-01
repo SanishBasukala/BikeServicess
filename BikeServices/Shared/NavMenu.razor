@@ -1,48 +1,43 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">Bike Service</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
+﻿
+<div class="left-navbar">
+    <p class="text-center">Bike Service</p>
 </div>
 
-<div class='@(_collapseNavMenu ? "collapse" : "")' @onclick="ToggleNavMenu">
-    <nav class="flex-column">
-        <div class="nav-item px-3"><h5 class="text-light">Welcome <strong>@Username</strong>!</h5></div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="inventory">
-                <span class="oi oi-list-rich" /> Inventory
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="inventoryLog">
-                <span class="oi oi-person" /> Inventory Log
-            </NavLink>
-        </div>
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="users">
-                    <span class="oi oi-person" /> Users
-                </NavLink>
-            </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link text-danger" role="button" @onclick="LogoutHandler">
-                <span class="oi oi-account-logout" /> Logout
-            </NavLink>
-        </div>
-    </nav>
-</div>
+<nav class="left-navbar-down">
+    <div class="nav-item px-3"><h5 class="text-light">Welcome <strong>@Username</strong>!</h5></div>
+    <div class="nav-item px-3">
+        <NavLink class="nav-link" href="inventory">
+            <span class="oi oi-list-rich" /> Inventory
+        </NavLink>
+    </div>
+    <div class="nav-item px-3">
+        <NavLink class="nav-link" href="inventoryLog">
+            <span class="oi oi-list" /> Inventory Log
+        </NavLink>
+    </div>
+    <div class="nav-item px-3">
+        <NavLink class="nav-link" href="users">
+            <span class="oi oi-person" /> Users
+        </NavLink>
+    </div>
+    <div class="nav-item px-3">
+        <NavLink class="nav-link" href="barGraph">
+            <span class="oi oi-bar-chart" /> Bar Graph
+        </NavLink>
+    </div>
+    <div class="nav-item px-3">
+        <NavLink class="nav-link text-danger" role="button" @onclick="LogoutHandler">
+            <span class="oi oi-account-logout" /> Logout
+        </NavLink>
+    </div>
+</nav>
+
+
+
 
 @code {
     [Parameter]
     public string Username { get; set; }
     [Parameter]
     public EventCallback LogoutHandler { get; set; }
-
-    private bool _collapseNavMenu { get; set; } = true;
-
-    private void ToggleNavMenu()
-    {
-        _collapseNavMenu = !_collapseNavMenu;
-    }
 }

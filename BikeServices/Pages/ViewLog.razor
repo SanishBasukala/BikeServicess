@@ -1,5 +1,5 @@
 ﻿@page "/viewlog"
-
+<nav class="navbar title">Log of added and deleted items</nav>
 <table class="table">
     <thead>
         <tr>
@@ -43,11 +43,11 @@
         }
     }
 </table>
+
 @code {
     [CascadingParameter]
     private GlobalState _globalState { get; set; }
     private List<ViewLogItems> _logItems { get; set; }
-
 
     protected override void OnInitialized()
     {

@@ -1,8 +1,8 @@
 ﻿@page "/users"
 @using System.Diagnostics
 
-<nav class="navbar navbar-light bg-light justify-content-between">
-    <h1 class="navbar-brand mb-0 h1">Users</h1>
+<nav class="navbar title navbar-light bg-light justify-content-between">
+    <h1 class="navbar-brand mb-0 h1 title">Users</h1>
 
     <button class="btn btn-primary" type="button" @onclick="OpenAddUserDialog">
         <span class="oi oi-plus" /> Add Admin
@@ -22,7 +22,7 @@
         {
             <tr>
                 <td>@user.Username</td>
-                <td>@user.CreatedAt.ToString("MMM dd, yyyy h:mm tt")</td>
+                <td>@user.CreatedAt..ToString("MMM dd, yyyy")</td>
                 <td>
                     @{
                         var creator = UsersService.GetById(user.CreatedBy);

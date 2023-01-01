@@ -31,14 +31,14 @@ public static class InventoryService
         return JsonSerializer.Deserialize<List<Items>>(json);
     }
 
-    public static List<Items> Create(Guid userId, string itemName, int quanity, DateTime lastTakenOut)
+    public static List<Items> Create(Guid userId, string itemName, int quanity)
     {
         List<Items> items = GetAll();
         items.Add(new Items
         {
             ItemName = itemName,
             Quanity = quanity,
-            LastTakenOut = lastTakenOut
+            LastTakenOut = "Not taken out yet"
         });
         SaveAll(userId, items);
         return items;
@@ -68,7 +68,7 @@ public static class InventoryService
         }
     }
 
-    public static List<Items> Update(Guid userId, Guid id, string itemName, int quantity, DateTime lastTakenOut)
+    public static List<Items> Update(Guid userId, Guid id, string itemName, int quantity)
     {
         List<Items> items = GetAll();
         Items itemToUpdate = items.FirstOrDefault(x => x.Id == id);
@@ -77,15 +77,13 @@ public static class InventoryService
         {
             throw new Exception("item not found.");
         }
-
         itemToUpdate.ItemName = itemName;
         itemToUpdate.Quanity = quantity;
-        itemToUpdate.LastTakenOut = lastTakenOut;
         SaveAll(userId, items);
         return items;
     }
 
-    public static List<Items> DecreaseQuanity(Guid userId, Guid id, string itemName, int quantity, DateTime lastTakenOut, int quantityTaken)
+    public static List<Items> DecreaseQuanity(Guid userId, Guid id, string itemName, string lastTakenOut, int quantityTaken)
     {
         List<Items> items = GetAll();
         Items itemToUpdate = items.FirstOrDefault(x => x.Id == id);
