@@ -10,9 +10,21 @@
     background-color: rgb(17,24,37);
 }
 .navbar {
-    background-color: rgb(199, 199, 199) !important;
+    background-color: rgb(12,16,24) !important;
     padding-left: 10px !important;
+    padding-right: 10px !important;
     border-radius: 10px;
+}
+
+.table {
+    margin-top: 20px;
+    border-radius: 10px;
+    background-color: rgb(201, 249, 255);
+}
+
+.table-header {
+    background-color: rgb(17,24,37);
+    color: white;
 }
 
 /* Login page. */
@@ -101,10 +113,9 @@
 
 /* Graph page. */
 .title {
-    background-color: rgb(199, 199, 199);
-    padding-left: 10px;
     font-size: 25px;
     font-weight:600;
+    color:white;
 }
 .graph-row {
     display: flex;

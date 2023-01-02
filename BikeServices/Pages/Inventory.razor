@@ -16,7 +16,7 @@
 </nav>
 
 <table class="table">
-    <thead>
+    <thead class="table-header">
         <tr>
             <th>
                 <div class="d-flex">
@@ -32,6 +32,12 @@
                 <div class="d-flex">
                     Last taken out on
                 </div>
+            </th>
+            <th>
+            </th>
+            <th>
+            </th>
+            <th>
             </th>
         </tr>
     </thead>
@@ -101,11 +107,11 @@
 {
     <ModalDialog Title="@_dialogTitle" OnClose="@OnEditItemDialogClose" OkLabel="@_dialogOkLabel">
         <div class="form-floating">
-            <input id="itemName" type="text" class="form-control" @bind="_itemModel.ItemName" placeholder="Item Name" />
+            <input id="itemName" type="text" class="form-control" @bind="tempEditItemName" placeholder="Item Name" />
             <label for="itemName">Item Name</label>
         </div>
         <div class="form-floating">
-            <input id="quantity" type="number" class="form-control" @bind="_itemModel.Quanity" placeholder="Quantity" />
+            <input id="quantity" type="number" class="form-control" @bind="tempEditQuantity" placeholder="Quantity" />
             <label for="quantity">Quantity</label>
         </div>
 
@@ -158,7 +164,7 @@
     private string _dialogTitle { get; set; }
     private string _dialogOkLabel { get; set; }
 
-    //Add item
+    // Add item
     private bool _showAddItemDialog { get; set; }
     private string _addItemErrorMessage { get; set; }
     public string lastTakenOut{ get; set; }
@@ -166,6 +172,9 @@
     // Edit item.
     private bool _showEditItemDialog { get; set; }
     private string _editItemErrorMessage { get; set; }
+    public string tempEditItemName{ get; set; }
+    public int tempEditQuantity { get; set; }
+    public bool canEdit = true;
 
     // Delete item.
     private bool _showDeleteItemDialog { get; set; }
@@ -184,6 +193,7 @@
     private bool canRequest = true;
     private DateTime checkCurrentTime;
     private DateTime checkCurrentDate;
+    public string tempUser{ get; set; }
 
     // View log.
     private List<ViewLogItems> _viewLogItems { get; set; }
@@ -194,10 +204,12 @@
     protected override void OnInitialized()
     {
         _items = InventoryService.GetAll();
+        _users = UserService.GetAll();
         if ((checkCurrentDate.DayOfWeek == DayOfWeek.Sunday || checkCurrentDate.DayOfWeek == DayOfWeek.Saturday) || (checkCurrentTime.TimeOfDay < new TimeSpan(9, 0, 0) || checkCurrentTime.TimeOfDay > new TimeSpan(16, 0, 0)))
         {
             canRequest = false;
         }
+
     }
 
     private void OpenAddItemDialog()
@@ -248,6 +260,8 @@
         _dialogOkLabel = "Save";
         _itemModel = editItem;
         _showEditItemDialog = true;
+        tempEditItemName = _itemModel.ItemName;
+        tempEditQuantity = _itemModel.Quanity;
     }
 
     private void OnEditItemDialogClose(bool isCancel)
@@ -256,16 +270,26 @@
         {
             _showEditItemDialog = false;
         }
+        else if(tempEditQuantity < 0 ){
+            _editItemErrorMessage = "Quantity cannot be less than 0";
+            canEdit = false;
+        }
+        else if(string.IsNullOrEmpty(tempEditItemName)){
+            _editItemErrorMessage = "Item name cannot be blank";
+            canEdit = false;
+        }
         else
         {
             try
             {
-
                 _editItemErrorMessage = "";
                 if (_itemModel.Id == Guid.Empty)
                 {
 
                     _items = InventoryService.Create(_globalState.CurrentUser.Id, _itemModel.ItemName, _itemModel.Quanity);
+                }
+                else if(canEdit == false){
+                    _items = InventoryService.Update(_globalState.CurrentUser.Id, _itemModel.Id, tempEditItemName, tempEditQuantity);
                 }
                 else
                 {
@@ -324,7 +348,12 @@
     }
     private void OnRequestItemDialogClose(bool isCancel)
     {
-
+        var staffs = UserService.GetAll().Where(t => t.Username.ToLower().Equals(_takenBy.ToLower()));
+        foreach (var user in _users){
+            if(_takenBy.ToLower() == user.Username.ToLower()){
+                tempUser = user.Username;
+            }
+        }
         if (isCancel)
         {
             _showRequestItemDialog = false;
@@ -338,6 +367,9 @@
         {
             _requestItemErrorMessage = "Enter name of customer who took the item";
         }
+        else if (!staffs.Any()){
+            _requestItemErrorMessage = "Staff does not exist";
+        }
         else if (_quantityTaken > tempQuanity)
         {
             _requestItemErrorMessage = "Not enough items in inventory";
@@ -348,8 +380,8 @@
             try
             {
                 _requestItemErrorMessage = "";
-                _requestItems = RequestItemService.Create(_globalState.CurrentUser.Id, _itemModel.ItemName, _quantityTaken, _takenBy, _dateTakenOut);
-                _items = InventoryService.DecreaseQuanity(_globalState.CurrentUser.Id, _itemModel.Id, _itemModel.ItemName, lastTakenOut, _quantityTaken);
+                _requestItems = RequestItemService.Create(_globalState.CurrentUser.Id, _itemModel.ItemName, _quantityTaken, tempUser, _dateTakenOut);
+                _items = InventoryService.ChangeOnRequest(_globalState.CurrentUser.Id, _itemModel.Id, _itemModel.ItemName, lastTakenOut, _quantityTaken);
                 _showRequestItemDialog = false;
             }
             catch (Exception e)

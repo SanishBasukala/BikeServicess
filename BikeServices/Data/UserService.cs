@@ -3,11 +3,13 @@ using System.Text.Json;
 
 namespace BikeServices.Data;
 
-public static class UsersService
+public static class UserService
 {
+    // Default admin credentials.
     public const string SeedUsername = "admin";
     public const string SeedPassword = "admin";
 
+    // Save all users.
     private static void SaveAll(List<User> users)
     {
         string appDataDirectoryPath = Utils.GetAppDirectoryPath();
@@ -22,6 +24,7 @@ public static class UsersService
         File.WriteAllText(appUsersFilePath, json);
     }
 
+    // Get all users of the system.
     public static List<User> GetAll()
     {
         string appUsersFilePath = Utils.GetAppUsersFilePath();
@@ -35,14 +38,15 @@ public static class UsersService
         return JsonSerializer.Deserialize<List<User>>(json);
     }
 
-    public static List<User> Create(Guid userId, string username, string password)
+    // Create new users.
+    public static List<User> Create(Guid userId, string username, string password, Role role)
     {
         List<User> users = GetAll();
         bool usernameExists = users.Any(x => x.Username == username);
 
-        var count = users.Count;
+        int userRole = users.Count(x => x.Role == Role.Admin);
 
-        if (count >= 2)
+        if (userRole >= 2)
         {
             throw new Exception("Error");
         }
@@ -56,6 +60,8 @@ public static class UsersService
             new User
             {
                 Username = username,
+                PasswordHash = Utils.HashSecret(password),
+                Role = role,
                 CreatedBy = userId
             }
         );
@@ -63,21 +69,25 @@ public static class UsersService
         return users;
     }
 
+    // Creating default admin if not already available.
     public static void SeedUsers()
     {
-        var users = GetAll().FirstOrDefault();
+        var users = GetAll().FirstOrDefault(x => x.Role == Role.Admin);
 
         if (users == null)
         {
-            Create(Guid.Empty, SeedUsername, SeedPassword);
+            Create(Guid.Empty, SeedUsername, SeedPassword, Role.Admin);
         }
     }
+
+    // Get users by their unique id.
     public static User GetById(Guid id)
     {
         List<User> users = GetAll();
         return users.FirstOrDefault(x => x.Id == id);
     }
 
+    // Delete users.
     public static List<User> Delete(Guid id)
     {
         List<User> users = GetAll();
@@ -95,6 +105,7 @@ public static class UsersService
         return users;
     }
 
+    // Check credentials when loggin in the system.
     public static User Login(string username, string password)
     {
         var loginErrorMessage = "Invalid username or password.";
@@ -114,8 +125,6 @@ public static class UsersService
             throw new Exception(loginErrorMessage);
 
         }
-        //System.Collections.Generic.List`1[BikeServices.Data.User]
         return user;
     }
-
 }

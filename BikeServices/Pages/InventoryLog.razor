@@ -1,7 +1,7 @@
 ﻿@page "/inventoryLog"
 
 <nav class="navbar navbar-light bg-light justify-content-between">
-    <h1 class="navbar-brand mb-0 title">Inventory Log</h1>
+    <h1 class="navbar title">Inventory Log</h1>
     <select class="dropDown" @bind="_value" @onclick="() => SortByMonth()">
         <option value="" selected>Sort By Month</option>
         <option value="Jan">January</option>
@@ -19,7 +19,7 @@
     </select>
     </nav>
 <table class="table">
-    <thead>
+    <thead class="table-header">
         <tr>
             <th>
                 <div class="d-flex">
@@ -59,8 +59,8 @@
                     <td>
                     
                     @{
-                        var creator = UsersService.GetById(requestItem.ApprovedBy);
-                        <span>@(creator.Username)</span>
+                        var creator = UserService.GetById(requestItem.ApprovedBy);
+                        <span>@(creator == null ? "Unknown" : creator.Username)</span>
                     }
                     </td>
                <td>

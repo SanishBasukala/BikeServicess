@@ -31,7 +31,7 @@
     {
         try
         {
-            var user = UsersService.Login(UsersService.SeedUsername, UsersService.SeedPassword);
+            var user = UserService.Login(UserService.SeedUsername, UserService.SeedPassword);
         }
         catch { }
 
@@ -44,7 +44,7 @@
         try
         {
             _errorMessage = "";
-            _globalState.CurrentUser = UsersService.Login(_username, _password);
+            _globalState.CurrentUser = UserService.Login(_username, _password);
             if (_globalState.CurrentUser != null)
             {
                 NavManager.NavigateTo("/inventory");

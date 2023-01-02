@@ -1,7 +1,7 @@
 ﻿@page "/viewlog"
 <nav class="navbar title">Log of added and deleted items</nav>
 <table class="table">
-    <thead>
+    <thead class="table-header">
         <tr>
             <th>
                 <div class="d-flex">
@@ -35,8 +35,8 @@
                 <td>@viewLogItem.ActionPerformed</td>
                 <td>
                     @{
-                        var creator = UsersService.GetById(viewLogItem.ActionPerformer);
-                        <span>@(creator.Username)</span>
+                        var creator = UserService.GetById(viewLogItem.ActionPerformer);
+                        <span>@(creator == null ? "unknown": creator.Username)</span>
                     }
                 </td>
             </tr>

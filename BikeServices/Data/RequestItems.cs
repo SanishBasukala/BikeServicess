@@ -1,5 +1,4 @@
 ﻿namespace BikeServices.Data;
-
 public class RequestItems
 {
     public string ItemName { get; set; }
@@ -7,6 +6,5 @@ public class RequestItems
     public Guid ApprovedBy { get; set; }
     public string TakenBy { get; set; }
     public DateTime DateTakenOut { get; set; }
-
 }
 

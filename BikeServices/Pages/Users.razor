@@ -2,19 +2,20 @@
 @using System.Diagnostics
 
 <nav class="navbar title navbar-light bg-light justify-content-between">
-    <h1 class="navbar-brand mb-0 h1 title">Users</h1>
+    <h1 class="navbar title">Users</h1>
 
     <button class="btn btn-primary" type="button" @onclick="OpenAddUserDialog">
         <span class="oi oi-plus" /> Add Admin
     </button>
 </nav>
 <table class="table">
-    <thead>
+    <thead class="table-header">
         <tr>
             <th>Username</th>
-            <th>Created At</th>
-            <th>CreatedBy</th>
-            <th>Actions</th>
+            <th>Role</th>
+            <th>Creation Date</th>
+            <th>Creator</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -22,10 +23,11 @@
         {
             <tr>
                 <td>@user.Username</td>
-                <td>@user.CreatedAt..ToString("MMM dd, yyyy")</td>
+                <td>@user.Role.ToString()</td>
+                <td>@user.CreatedAt.ToString("MMM dd, yyyy")</td>
                 <td>
                     @{
-                        var creator = UsersService.GetById(user.CreatedBy);
+                        var creator = UserService.GetById(user.CreatedBy);
                         <span>@(creator == null ? "Unknown" : creator.Username)</span>
                     }
                 </td>
@@ -52,9 +54,19 @@
                 <input type="password" class="form-control password" @bind="_password" placeholder="Password" />
                 <label for="floatingPassword">Password</label>
             </div>
-            @if (!string.IsNullOrEmpty(_addItemErrorMessage))
+            <div class="form-check">
+            <input id="userRole" type="radio" class="form-check-input" name="role" value="@Role.Staff"
+                @onchange="RoleChangeHandler" checked="@(_role == Role.Staff)">
+            <label class="form-check-label" for="userRole">@Role.Staff</label>
+        </div>
+        <div class="form-check">
+            <input id="adminRole" type="radio" class="form-check-input" name="role" value="@Role.Admin"
+                @onchange="RoleChangeHandler" checked="@(_role == Role.Admin)">
+            <label class="form-check-label" for="adminRole">@Role.Admin</label>
+        </div>
+            @if (!string.IsNullOrEmpty(_addUserErrorMessage))
             {
-                <AlertMessage Type="danger" Message="@_addItemErrorMessage" />
+                <AlertMessage Type="danger" Message="@_addUserErrorMessage" />
             }
         </form>
     </ModalDialog>
@@ -77,15 +89,16 @@
     private List<User> _users { get; set; }
     private bool _showAddUserDialog { get; set; }
     private bool _showDeleteUserDialog { get; set; }
-    private string _addItemErrorMessage { get; set; }
+    private string _addUserErrorMessage { get; set; }
     private string _deleteUserErrorMessage { get; set; }
     private User _deleteUser { get; set; }
     private string _username { get; set; }
     private string _password { get; set; }
+    private Role _role{ get; set; }
 
     protected override void OnInitialized()
     {
-        _users = UsersService.GetAll();
+        _users = UserService.GetAll();
     }
 
     private void OpenAddUserDialog()
@@ -93,6 +106,7 @@
         _showAddUserDialog = true;
         _username = "";
         _password = "";
+        _role = Role.Staff;
     }
 
     private void OnAddUserDialogClose(bool isCancel)
@@ -100,21 +114,26 @@
         if (isCancel)
         {
             _showAddUserDialog = false;
-            _addItemErrorMessage = "";
+            _addUserErrorMessage = "";
         }
         else
         {
             try
             {
-                _addItemErrorMessage = "";
-                _users = UsersService.Create(_globalState.CurrentUser.Id, _username, _password);
+                _addUserErrorMessage = "";
+                _users = UserService.Create(_globalState.CurrentUser.Id, _username, _password, _role);
                 _showAddUserDialog = false;
             }
             catch (Exception e)
             {
-                _addItemErrorMessage = e.Message;
+                _addUserErrorMessage = e.Message;
             }
         }
+    }
+
+    private void RoleChangeHandler(ChangeEventArgs e)
+    {
+        _role = (Role)Enum.Parse(typeof(Role), e.Value.ToString());
     }
 
     private void OpenDeleteUserDialog(User user)
@@ -135,7 +154,7 @@
             try
             {
                 _deleteUserErrorMessage = "";
-                _users = UsersService.Delete(_deleteUser.Id);
+                _users = UserService.Delete(_deleteUser.Id);
                 _showDeleteUserDialog = false;
                 _deleteUser = null;
             }

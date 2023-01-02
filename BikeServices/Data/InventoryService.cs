@@ -4,6 +4,7 @@
 namespace BikeServices.Data;
 public static class InventoryService
 {
+    // Save all items in json file.
     private static void SaveAll(Guid userId, List<Items> items)
     {
         string appDataDirectoryPath = Utils.GetAppDirectoryPath();
@@ -18,6 +19,7 @@ public static class InventoryService
         File.WriteAllText(itemsFilePath, json);
     }
 
+    // Get all items from json file.
     public static List<Items> GetAll()
     {
         string itemsFilePath = Utils.GetItemsFilePath();
@@ -31,6 +33,7 @@ public static class InventoryService
         return JsonSerializer.Deserialize<List<Items>>(json);
     }
 
+    // Create new items for adding in the inventory.
     public static List<Items> Create(Guid userId, string itemName, int quanity)
     {
         List<Items> items = GetAll();
@@ -44,6 +47,7 @@ public static class InventoryService
         return items;
     }
 
+    // Delete items from the inventory
     public static List<Items> Delete(Guid userId, Guid id)
     {
         List<Items> items = GetAll();
@@ -59,6 +63,7 @@ public static class InventoryService
         return items;
     }
 
+    // Delete items from json file.
     public static void DeleteByUserId(Guid userId)
     {
         string itemsFilePath = Utils.GetItemsFilePath();
@@ -68,6 +73,7 @@ public static class InventoryService
         }
     }
 
+    // Update items after editing.
     public static List<Items> Update(Guid userId, Guid id, string itemName, int quantity)
     {
         List<Items> items = GetAll();
@@ -83,7 +89,8 @@ public static class InventoryService
         return items;
     }
 
-    public static List<Items> DecreaseQuanity(Guid userId, Guid id, string itemName, string lastTakenOut, int quantityTaken)
+    // Change the date and quantity when items are requested.
+    public static List<Items> ChangeOnRequest(Guid userId, Guid id, string itemName, string lastTakenOut, int quantityTaken)
     {
         List<Items> items = GetAll();
         Items itemToUpdate = items.FirstOrDefault(x => x.Id == id);

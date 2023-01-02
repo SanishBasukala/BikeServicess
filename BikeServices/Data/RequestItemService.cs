@@ -4,6 +4,7 @@ namespace BikeServices.Data;
 
 public class RequestItemService
 {
+    // Save all requested items in json file.
     public static void SaveAll(List<RequestItems> requestItems)
     {
         string appDataDirectoryPath = Utils.GetAppDirectoryPath();
@@ -18,6 +19,7 @@ public class RequestItemService
         File.WriteAllText(requestItemFilePath, json);
     }
 
+    // Get all requested items from json file.
     public static List<RequestItems> GetAll()
     {
         string requestItemFilePath = Utils.GetInventoryLogFilePath();
@@ -31,6 +33,7 @@ public class RequestItemService
         return JsonSerializer.Deserialize<List<RequestItems>>(json);
     }
 
+    // Create a new requested item and save it.
     public static List<RequestItems> Create(Guid userId, string itemName, int quantityTaken, string takenBy, DateTime dateTakenOut)
     {
         List<RequestItems> requestItems = GetAll();

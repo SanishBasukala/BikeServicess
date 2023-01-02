@@ -75,5 +75,3 @@ public static class Utils
         return Path.Combine(GetAppDirectoryPath(), "InventoryLog.json");
     }
 }
-
-
