@@ -1,11 +1,13 @@
 ﻿@page "/"
 @inject NavigationManager NavManager
+
 @code {
     [CascadingParameter]
     private GlobalState _globalState { get; set; }
 
     protected override void OnInitialized()
     {
+        // Condition to check if users exist.
         if (_globalState.CurrentUser == null)
         {
             NavManager.NavigateTo("/login");

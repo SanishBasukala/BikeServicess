@@ -1,17 +1,27 @@
 ﻿@page "/inventory"
-
-<div  class="note">
-    Request available for <span>9:00 AM - 04:00 PM (Cannot request for items on Saturday and Sunday)</span>
-</div>
+@{
+    if (currentUser == "admin")
+    {
+        <div class="note">
+            Request available for <span>9:00 AM - 04:00 PM (Cannot request for items on Saturday and Sunday)</span>
+        </div>
+    }
+}
 <nav class="navbar ">
     <h1 class="navbar-brand mb-0 title">Inventory</h1>
     <div class="buttons">
-        <a class="viewLog" type="button" href="/viewlog">
-            <span class="oi oi-list" /> View Log
-        </a>
-        <button class="btn btn-primary" type="button" @onclick="OpenAddItemDialog">
-            <span class="oi oi-plus" /> Add
-        </button>
+        @{
+            if (currentUser == "admin")
+            {
+                <a class="viewLog" type="button" href="/viewlog">
+                    <span class="oi oi-list" /> View Log
+                </a>
+
+                <button class="btn btn-primary" type="button" @onclick="OpenAddItemDialog">
+                    <span class="oi oi-plus" /> Add
+                </button>
+            }
+        }
     </div>
 </nav>
 
@@ -43,10 +53,10 @@
     </thead>
     <tbody>
         @{
+            // Read list of items to be used in foreach.
             IEnumerable<Items> itemList = _items;
             foreach (var inventoryItem in itemList)
             {
-                Debug.WriteLine(_items);
                 <tr>
                     <td>@inventoryItem.ItemName</td>
                     <td>
@@ -58,24 +68,31 @@
                         @inventoryItem.LastTakenOut
                     </td>
                     <td>
-                        <button class="btn btn-outline-secondary" type="button"
-                            @onclick="()=>OpenEditItemDialog(inventoryItem)">
-                            <span class="oi oi-pencil" /> Edit
-                        </button>
-                        <button class="btn btn-outline-danger" type="button" @onclick="()=>OpenDeleteItemDialog(inventoryItem)">
-                            <span class="oi oi-delete" /> Delete
-                        </button>
                         @{
-                            if (canRequest == false)
+                            if (currentUser == "admin")
                             {
-                                <button class="btn request_button canRequest" type="button" @onclick="()=>OpenRequestItemDialog(inventoryItem)">
-                                    <span class="oi oi-envelope" /> Request
+                                <button class="btn btn-outline-secondary" type="button"
+                                @onclick="()=>OpenEditItemDialog(inventoryItem)">
+                                    <span class="oi oi-pencil" /> Edit
                                 </button>
-                            }
-                            else{
-                                <button disabled class="btn request_button cannotRequest" type="button">
-                                    <span class="oi oi-envelope" /> Request
+                                <button class="btn btn-outline-danger" type="button" @onclick="()=>OpenDeleteItemDialog(inventoryItem)">
+                                    <span class="oi oi-delete" /> Delete
                                 </button>
+
+                                // Condition to check if items can be requested
+                                if (canRequest == false)
+                                {
+                                    <button class="btn request_button canRequest" type="button" @onclick="()=>OpenRequestItemDialog(inventoryItem)">
+                                        <span class="oi oi-envelope" /> Request
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button disabled class="btn request_button cannotRequest" type="button">
+                                        <span class="oi oi-envelope" /> Request
+                                    </button>
+                                }
+
                             }
                         }
                     </td>
@@ -85,6 +102,7 @@
     </tbody>
 </table>
 
+@*Condition to display model for adding items*@
 @if (_showAddItemDialog)
 {
     <ModalDialog Title="@_dialogTitle" OnClose="@OnAddItemDialogClose" OkLabel="@_dialogOkLabel">
@@ -103,6 +121,8 @@
         }
     </ModalDialog>
 }
+
+@*Condition to display model for editing items*@
 @if (_showEditItemDialog)
 {
     <ModalDialog Title="@_dialogTitle" OnClose="@OnEditItemDialogClose" OkLabel="@_dialogOkLabel">
@@ -122,6 +142,7 @@
     </ModalDialog>
 }
 
+@*Condition to display model for deleting items*@
 @if (_showDeleteItemDialog)
 {
     <ModalDialog Title="Cannot request at the moment" OnClose="@OnDeleteItemDialogClose" OkLabel="Confirm">
@@ -133,6 +154,7 @@
     </ModalDialog>
 }
 
+@*Condition to display model for requesting items*@
 @if (_showRequestItemDialog)
 {
     <ModalDialog Title="Request Item" OnClose="@OnRequestItemDialogClose" OkLabel="Request Item">
@@ -163,26 +185,27 @@
     private DateTime _lastTakenOut { get; set; }
     private string _dialogTitle { get; set; }
     private string _dialogOkLabel { get; set; }
+    public string currentUser = "staff";
 
-    // Add item
+    // Variables for Adding item
     private bool _showAddItemDialog { get; set; }
     private string _addItemErrorMessage { get; set; }
-    public string lastTakenOut{ get; set; }
+    public string lastTakenOut { get; set; }
 
-    // Edit item.
+    // Variables for editing item.
     private bool _showEditItemDialog { get; set; }
     private string _editItemErrorMessage { get; set; }
-    public string tempEditItemName{ get; set; }
+    public string tempEditItemName { get; set; }
     public int tempEditQuantity { get; set; }
     public bool canEdit = true;
 
-    // Delete item.
+    // Variables for deleting item.
     private bool _showDeleteItemDialog { get; set; }
     private Items _deleteItem { get; set; }
     private string _deleteItemErrorMessage { get; set; }
     private string tempItemName;
 
-    // Request item.
+    // Variables for requesting item.
     private List<RequestItems> _requestItems { get; set; }
     private bool _showRequestItemDialog { get; set; }
     private int _quantityTaken { get; set; }
@@ -193,9 +216,9 @@
     private bool canRequest = true;
     private DateTime checkCurrentTime;
     private DateTime checkCurrentDate;
-    public string tempUser{ get; set; }
+    public string tempUser { get; set; }
 
-    // View log.
+    // Variables for viewing log item.
     private List<ViewLogItems> _viewLogItems { get; set; }
     private DateTime _actionDate { get; set; }
     private string _actionPerformed { get; set; }
@@ -205,9 +228,18 @@
     {
         _items = InventoryService.GetAll();
         _users = UserService.GetAll();
+        // Condition to check the day of week and time of day for requesting items.
         if ((checkCurrentDate.DayOfWeek == DayOfWeek.Sunday || checkCurrentDate.DayOfWeek == DayOfWeek.Saturday) || (checkCurrentTime.TimeOfDay < new TimeSpan(9, 0, 0) || checkCurrentTime.TimeOfDay > new TimeSpan(16, 0, 0)))
         {
             canRequest = false;
+        }
+        if (_globalState.CurrentUser != null && _globalState.CurrentUser.Role == Role.Admin)
+        {
+            currentUser = "admin";
+        }
+        else
+        {
+            currentUser = "staff";
         }
 
     }
@@ -243,7 +275,9 @@
                 _actionDate = DateTime.Now;
                 _actionPerformed = "Added item";
                 _addItemErrorMessage = "";
+                // Creating logs for added and deleted items
                 _viewLogItems = ViewLogService.Create(_globalState.CurrentUser.Id, _itemName, _actionDate, _actionPerformed);
+                // Creating items that have been added by admin
                 _items = InventoryService.Create(_globalState.CurrentUser.Id, _itemName, _quantity);
                 _showAddItemDialog = false;
             }
@@ -266,15 +300,19 @@
 
     private void OnEditItemDialogClose(bool isCancel)
     {
+        _editItemErrorMessage = "";
+        canEdit = true;
         if (isCancel)
         {
             _showEditItemDialog = false;
         }
-        else if(tempEditQuantity < 0 ){
+        else if (tempEditQuantity < 0)
+        {
             _editItemErrorMessage = "Quantity cannot be less than 0";
             canEdit = false;
         }
-        else if(string.IsNullOrEmpty(tempEditItemName)){
+        else if (string.IsNullOrEmpty(tempEditItemName))
+        {
             _editItemErrorMessage = "Item name cannot be blank";
             canEdit = false;
         }
@@ -282,18 +320,18 @@
         {
             try
             {
-                _editItemErrorMessage = "";
+
                 if (_itemModel.Id == Guid.Empty)
                 {
-
                     _items = InventoryService.Create(_globalState.CurrentUser.Id, _itemModel.ItemName, _itemModel.Quanity);
                 }
-                else if(canEdit == false){
-                    _items = InventoryService.Update(_globalState.CurrentUser.Id, _itemModel.Id, tempEditItemName, tempEditQuantity);
+                else if (canEdit == false)
+                {
+                    _items = InventoryService.Update(_globalState.CurrentUser.Id, _itemModel.Id, _itemModel.ItemName, _itemModel.Quanity);
                 }
                 else
                 {
-                    _items = InventoryService.Update(_globalState.CurrentUser.Id, _itemModel.Id, _itemModel.ItemName, _itemModel.Quanity);
+                    _items = InventoryService.Update(_globalState.CurrentUser.Id, _itemModel.Id, tempEditItemName, tempEditQuantity);
                 }
                 _showEditItemDialog = false;
             }
@@ -349,8 +387,10 @@
     private void OnRequestItemDialogClose(bool isCancel)
     {
         var staffs = UserService.GetAll().Where(t => t.Username.ToLower().Equals(_takenBy.ToLower()));
-        foreach (var user in _users){
-            if(_takenBy.ToLower() == user.Username.ToLower()){
+        foreach (var user in _users)
+        {
+            if (_takenBy.ToLower() == user.Username.ToLower())
+            {
                 tempUser = user.Username;
             }
         }
@@ -367,7 +407,8 @@
         {
             _requestItemErrorMessage = "Enter name of customer who took the item";
         }
-        else if (!staffs.Any()){
+        else if (!staffs.Any())
+        {
             _requestItemErrorMessage = "Staff does not exist";
         }
         else if (_quantityTaken > tempQuanity)
@@ -390,4 +431,4 @@
             }
         }
     }
-}
+    }

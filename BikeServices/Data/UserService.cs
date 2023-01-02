@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace BikeServices.Data;
 
@@ -72,9 +71,9 @@ public static class UserService
     // Creating default admin if not already available.
     public static void SeedUsers()
     {
-        var users = GetAll().FirstOrDefault(x => x.Role == Role.Admin);
+        var seedUser = GetAll().FirstOrDefault(x => x.Role == Role.Admin);
 
-        if (users == null)
+        if (seedUser == null)
         {
             Create(Guid.Empty, SeedUsername, SeedPassword, Role.Admin);
         }
@@ -112,7 +111,7 @@ public static class UserService
         List<User> users = GetAll();
 
         User user = users.FirstOrDefault(x => x.Username == username);
-        Debug.WriteLine(user);
+
         if (user == null)
         {
             throw new Exception(loginErrorMessage);

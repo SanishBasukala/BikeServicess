@@ -55,9 +55,9 @@
                 <label for="floatingPassword">Password</label>
             </div>
             <div class="form-check">
-            <input id="userRole" type="radio" class="form-check-input" name="role" value="@Role.Staff"
+            <input id="staffRole" type="radio" class="form-check-input" name="role" value="@Role.Staff"
                 @onchange="RoleChangeHandler" checked="@(_role == Role.Staff)">
-            <label class="form-check-label" for="userRole">@Role.Staff</label>
+            <label class="form-check-label" for="staffRole">@Role.Staff</label>
         </div>
         <div class="form-check">
             <input id="adminRole" type="radio" class="form-check-input" name="role" value="@Role.Admin"

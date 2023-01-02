@@ -6,7 +6,7 @@
     @if (_globalState.CurrentUser != null)
     {
         <div class="sidebar">
-            <NavMenu Username="@_globalState.CurrentUser.Username"  LogoutHandler="LogoutHandler" />
+            <NavMenu Username="@_globalState.CurrentUser.Username" Role="@_globalState.CurrentUser.Role" LogoutHandler="LogoutHandler" />
         </div>
     }
 

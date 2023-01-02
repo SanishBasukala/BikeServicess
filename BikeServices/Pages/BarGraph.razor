@@ -6,6 +6,7 @@
     <div class="graph-row">
         <p class="quantityTaken">Quantisty taken</p>
         @{
+            // Read list of requested items to be used in foreach.
             IEnumerable<RequestItems> requestedItemList = _requestItems;
             foreach (var requestedItem in requestedItemList)
             {
@@ -21,6 +22,7 @@
         new ChartSeries() {  Data = yAxisLabels},
         };
         }
+        @* Creating bar graph for requested items and quantity requested. *@
         <div class="barGraph">
             <MudChart ChartType="ChartType.Bar" ChartSeries="@barseries" @bind-SelectedIndex="Index" XAxisLabels="@xAxisLabels" Width="100%" Height="350px">
                 <CustomGraphics>
@@ -54,6 +56,7 @@
     private double[] yAxisLabels;
     private string[] xAxisLabels;
 
+    // Get all requested items
     protected override void OnInitialized()
     {
         _requestItems = RequestItemService.GetAll();
