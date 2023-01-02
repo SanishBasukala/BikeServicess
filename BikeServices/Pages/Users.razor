@@ -42,6 +42,7 @@
     </tbody>
 </table>
 
+@* Condition to display model for adding users. *@
 @if (_showAddUserDialog)
 {
     <ModalDialog Title="Add User" OnClose="@OnAddUserDialogClose" OkLabel="Add">
@@ -72,6 +73,7 @@
     </ModalDialog>
 }
 
+@* Condition to display model for deleting users. *@
 @if (_showDeleteUserDialog)
 {
     <ModalDialog Title="Delete User" OnClose="@OnDeleteUserDialogClose" OkLabel="Confirm">
@@ -121,6 +123,8 @@
             try
             {
                 _addUserErrorMessage = "";
+
+                // Creating users
                 _users = UserService.Create(_globalState.CurrentUser.Id, _username, _password, _role);
                 _showAddUserDialog = false;
             }
@@ -154,6 +158,8 @@
             try
             {
                 _deleteUserErrorMessage = "";
+
+                // Deleting users
                 _users = UserService.Delete(_deleteUser.Id);
                 _showDeleteUserDialog = false;
                 _deleteUser = null;

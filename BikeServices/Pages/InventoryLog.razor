@@ -50,6 +50,7 @@
     </thead>
     <tbody>
         @{
+            // Read list of requested items to be used in foreach.
             IEnumerable<RequestItems> requestItemList = _requestItem;
             foreach (var requestItem in requestItemList)
             {
@@ -86,6 +87,7 @@
         _requestItem = RequestItemService.GetAll();
     }
 
+    // Sorting requested items according to month of year
     void SortByMonth()
     {
         if(string.IsNullOrEmpty(_value)){

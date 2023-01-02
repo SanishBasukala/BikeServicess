@@ -1,5 +1,8 @@
 ﻿@page "/inventory"
+
+
 @{
+    // Condition to check the role of current user and display UI accordingly.
     if (currentUser == "admin")
     {
         <div class="note">
@@ -11,6 +14,7 @@
     <h1 class="navbar-brand mb-0 title">Inventory</h1>
     <div class="buttons">
         @{
+            // Condition to check the role of current user and display UI accordingly.
             if (currentUser == "admin")
             {
                 <a class="viewLog" type="button" href="/viewlog">
@@ -69,6 +73,7 @@
                     </td>
                     <td>
                         @{
+                            // Condition to check the role of current user and display UI accordingly.
                             if (currentUser == "admin")
                             {
                                 <button class="btn btn-outline-secondary" type="button"
@@ -228,11 +233,14 @@
     {
         _items = InventoryService.GetAll();
         _users = UserService.GetAll();
+
         // Condition to check the day of week and time of day for requesting items.
         if ((checkCurrentDate.DayOfWeek == DayOfWeek.Sunday || checkCurrentDate.DayOfWeek == DayOfWeek.Saturday) || (checkCurrentTime.TimeOfDay < new TimeSpan(9, 0, 0) || checkCurrentTime.TimeOfDay > new TimeSpan(16, 0, 0)))
         {
             canRequest = false;
         }
+
+        // Condition to check the role of current user
         if (_globalState.CurrentUser != null && _globalState.CurrentUser.Role == Role.Admin)
         {
             currentUser = "admin";
@@ -275,8 +283,10 @@
                 _actionDate = DateTime.Now;
                 _actionPerformed = "Added item";
                 _addItemErrorMessage = "";
-                // Creating logs for added and deleted items
+
+                // Creating log when adding an item
                 _viewLogItems = ViewLogService.Create(_globalState.CurrentUser.Id, _itemName, _actionDate, _actionPerformed);
+
                 // Creating items that have been added by admin
                 _items = InventoryService.Create(_globalState.CurrentUser.Id, _itemName, _quantity);
                 _showAddItemDialog = false;
@@ -323,14 +333,17 @@
 
                 if (_itemModel.Id == Guid.Empty)
                 {
+                    // Creating new item if the item model does not exist.
                     _items = InventoryService.Create(_globalState.CurrentUser.Id, _itemModel.ItemName, _itemModel.Quanity);
                 }
                 else if (canEdit == false)
                 {
+                    // Updating item in a way, changes are not applied on close
                     _items = InventoryService.Update(_globalState.CurrentUser.Id, _itemModel.Id, _itemModel.ItemName, _itemModel.Quanity);
                 }
                 else
                 {
+                    // Updating items after editing
                     _items = InventoryService.Update(_globalState.CurrentUser.Id, _itemModel.Id, tempEditItemName, tempEditQuantity);
                 }
                 _showEditItemDialog = false;
@@ -361,8 +374,12 @@
             {
                 _actionDate = DateTime.Now;
                 _actionPerformed = "Deleted item";
+
+                // Creating new log when deleting items
                 _viewLogItems = ViewLogService.Create(_globalState.CurrentUser.Id, tempItemName, _actionDate, _actionPerformed);
                 _deleteItemErrorMessage = "";
+
+                // Deleting items 
                 _items = InventoryService.Delete(_globalState.CurrentUser.Id, _deleteItem.Id);
                 _showDeleteItemDialog = false;
                 _deleteItem = null;
@@ -373,6 +390,7 @@
             }
         }
     }
+
     private void OpenRequestItemDialog(Items items)
     {
         _dialogTitle = "Request Item";
@@ -384,6 +402,7 @@
         _showRequestItemDialog = true;
         _dateTakenOut = DateTime.Now;
     }
+
     private void OnRequestItemDialogClose(bool isCancel)
     {
         var staffs = UserService.GetAll().Where(t => t.Username.ToLower().Equals(_takenBy.ToLower()));
@@ -421,7 +440,11 @@
             try
             {
                 _requestItemErrorMessage = "";
+
+                // Creating a requested item log when items are requested
                 _requestItems = RequestItemService.Create(_globalState.CurrentUser.Id, _itemModel.ItemName, _quantityTaken, tempUser, _dateTakenOut);
+
+                // Updating items in inventory according to the request
                 _items = InventoryService.ChangeOnRequest(_globalState.CurrentUser.Id, _itemModel.Id, _itemModel.ItemName, lastTakenOut, _quantityTaken);
                 _showRequestItemDialog = false;
             }

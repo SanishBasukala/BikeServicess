@@ -26,6 +26,7 @@
         </tr>
     </thead>
     @{
+        // Read list of item logs that are added or deleted to be used in foreach.
         IEnumerable<ViewLogItems> viewLogItemList = _logItems;
         foreach (var viewLogItem in viewLogItemList)
         {
