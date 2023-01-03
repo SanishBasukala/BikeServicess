@@ -104,7 +104,7 @@ public static class UserService
         return users;
     }
 
-    // Check credentials when loggin in the system.
+    // Check credentials when logging in the system.
     public static User Login(string username, string password)
     {
         var loginErrorMessage = "Invalid username or password.";
@@ -122,7 +122,6 @@ public static class UserService
         if (!passwordIsValid)
         {
             throw new Exception(loginErrorMessage);
-
         }
         return user;
     }

@@ -6,16 +6,24 @@
     <div class="graph-row">
         <p class="quantityTaken">Quantisty taken</p>
         @{
+            Dictionary<string, int> requestedItemsDictionary = new Dictionary<string, int>();
             // Read list of requested items to be used in foreach.
-            IEnumerable<RequestItems> requestedItemList = _requestItems;
-            foreach (var requestedItem in requestedItemList)
+            
+            foreach (var requestedItem in  _requestItems)
             {
-                ListOfItems.Add(requestedItem.ItemName);
-                ListOfQuantity.Add(requestedItem.QuantityTaken);
+                string itemName = requestedItem.ItemName;
+                int sumOfQuantity = requestedItem.QuantityTaken;
+                if(!requestedItemsDictionary.ContainsKey(itemName)){
+                    requestedItemsDictionary[itemName] = sumOfQuantity;
+                    
+                }
+                else{
+                    requestedItemsDictionary[itemName] += sumOfQuantity;
+                }
             }
 
-            yAxisLabels = ListOfQuantity.Select(x => (double)x).ToArray();
-            xAxisLabels = ListOfItems.ToArray();
+            yAxisLabels = requestedItemsDictionary.Values.Select(x => (double)x).ToArray();
+            xAxisLabels = requestedItemsDictionary.Keys.ToArray();
 
             barseries = new List<ChartSeries>()
         {

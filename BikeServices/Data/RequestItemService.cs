@@ -14,7 +14,6 @@ public class RequestItemService
         {
             Directory.CreateDirectory(appDataDirectoryPath);
         }
-
         var json = JsonSerializer.Serialize(requestItems);
         File.WriteAllText(requestItemFilePath, json);
     }

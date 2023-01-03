@@ -63,7 +63,7 @@ public static class InventoryService
         return items;
     }
 
-    // Delete items from json file.
+    // Delete items from json file
     public static void DeleteByUserId(Guid userId)
     {
         string itemsFilePath = Utils.GetItemsFilePath();

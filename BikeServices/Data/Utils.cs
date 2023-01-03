@@ -5,7 +5,7 @@ namespace BikeServices.Data;
 public static class Utils
 {
     private const char _segmentDelimiter = ':';
-
+    // Way of encrypting password
     public static string HashSecret(string input)
     {
         var saltSize = 16;
@@ -23,7 +23,7 @@ public static class Utils
             algorithm
         );
     }
-
+    // Comparing password with json file
     public static bool VerifyHash(string input, string hashString)
     {
         string[] segments = hashString.Split(_segmentDelimiter);
@@ -38,10 +38,9 @@ public static class Utils
             algorithm,
             hash.Length
         );
-
         return CryptographicOperations.FixedTimeEquals(inputHash, hash);
     }
-
+    // Create a folder for all json files.
     public static string GetAppDirectoryPath()
     {
         return Path.Combine(
@@ -50,26 +49,23 @@ public static class Utils
         );
     }
 
+    // Create json file for users.
     public static string GetAppUsersFilePath()
     {
         return Path.Combine(GetAppDirectoryPath(), "users.json");
     }
-
+    // Create json file for items.
     public static string GetItemsFilePath()
     {
         return Path.Combine(GetAppDirectoryPath(), "items.json");
     }
 
-    public static string GetItemsLogFilePath()
-    {
-        return Path.Combine(GetAppDirectoryPath(), "itemLog.json");
-    }
-
+    // Create json file for log of added and deleted items.
     public static string GetViewLogFilePath()
     {
         return Path.Combine(GetAppDirectoryPath(), "ViewLog.json");
     }
-
+    // Create json file for requested items.
     public static string GetInventoryLogFilePath()
     {
         return Path.Combine(GetAppDirectoryPath(), "InventoryLog.json");
